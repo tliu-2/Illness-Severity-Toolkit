@@ -11,13 +11,14 @@ def exportCSV(df):
 
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 
-# Heart Rate:
-# Returns a list that contains the APACHE score for heart rate for all patients.
-# @param: heartRate is the the list that contains the heart rate for each patient. (Day 0)
-# @return: heartRateScore is a list that contains the APACHE scores of the corresponding heart rates. (Day 0)
-
 
 def get_heart_rate_score(heart_rate, heart_rate_1):
+    """
+    Calculates APACHE score for heart rate
+    :param heart_rate: 24h heart rate variable
+    :param heart_rate_1: alternative heart rate variable used if heart_rate is missing
+    :return: APACHE score for given heart rate
+    """
     if math.isnan(heart_rate):
         if math.isnan(heart_rate_1):
             return math.nan
@@ -40,11 +41,14 @@ def get_heart_rate_score(heart_rate, heart_rate_1):
 
 
 # Mean Blood Pressure:
-# Produces a list that contains the APACHE score for each patient and their associated bp.
-# @param: bp is the column of the (highest or lowest) mean arterial blood pressure (bp).
-# @return bloodPressure is a list that contains the APACHE scores for each patient.
 
 def get_bp_score(bp, bp_1):
+    """
+    Calculates APACHE score for blood pressure
+    :param bp: 24h mean arterial blood pressure value
+    :param bp_1: alternative variable if 24h variable is missing
+    :return: APACHE score for given blood pressure
+    """
     if math.isnan(bp):
         if math.isnan(bp_1):
             return math.nan
@@ -70,10 +74,13 @@ def get_bp_score(bp, bp_1):
 
 
 # Temperature:
-# This method assigns an APACHE score to temperature values.
-# @param temp is a panda Series containing all temperature data for all patients.
-# @return temperature is a panda Series containing temperature data in APACHE score values.
 def get_temp_score(temp, temp_1):
+    """
+    Calculates APACHE score for temperatures
+    :param temp: 24h temperature value
+    :param temp_1: alternative if 24h variable is missing / null
+    :return: APACHE score for given temperature
+    """
     if math.isnan(temp):
         if math.isnan(temp_1):
             return math.nan
@@ -105,6 +112,13 @@ def get_temp_score(temp, temp_1):
 # @ return respiratoryRate is a panda Series that contains respRate values in APACHE score values.
 
 def get_rr_score(rr, mech_vent, rr_1):
+    """
+    Calculates APACHE score for respiratory rate
+    :param rr: 24h respiratory rate value
+    :param mech_vent: mechanical ventilation status at 8am
+    :param rr_1: alternative if 24h variable is missing / null
+    :return: APACHE score for given respiratory rate
+    """
     if math.isnan(rr):
         if math.isnan(rr_1):
             return math.nan
@@ -129,6 +143,11 @@ def get_rr_score(rr, mech_vent, rr_1):
 
 
 def get_mech_vent(mech_vent):
+    """
+    Returns 1 if subject is on IMV and 0 if not
+    :param mech_vent: mechanical ventilation status
+    :return: 1 if mechanically ventilated, 0 if not
+    """
     if math.isnan(mech_vent):
         return math.nan
     elif mech_vent == 0:
