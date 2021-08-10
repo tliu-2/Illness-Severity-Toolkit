@@ -3,8 +3,8 @@ from tkinter.ttk import *
 from tkinter import filedialog
 import tkinter as tk
 import pandas as pd
-import Data_CHROME as d
-import Calculator_CHROME as calc
+import Data_Headers as d
+import Calculator as calc
 
 entries = []
 entrylabels = []

@@ -7,7 +7,7 @@
 
 import pandas as pd
 # mport Settings_CHROME_Batch as Settings
-import Settings_CHROME_Batch as Settings
+import Settings as Settings
 
 
 def run(dataset):
