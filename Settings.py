@@ -17,10 +17,13 @@ def exportCSV(df):
 # @return: heartRateScore is a list that contains the APACHE scores of the corresponding heart rates. (Day 0)
 
 
-def get_heart_rate_score(heart_rate):
+def get_heart_rate_score(heart_rate, heart_rate_1):
     if math.isnan(heart_rate):
-        return math.nan
-    elif heart_rate >= 155:
+        if math.isnan(heart_rate_1):
+            return math.nan
+        else:
+            heart_rate = heart_rate_1
+    if heart_rate >= 155:
         return 17
     elif 154 >= heart_rate >= 140:
         return 13
@@ -41,10 +44,13 @@ def get_heart_rate_score(heart_rate):
 # @param: bp is the column of the (highest or lowest) mean arterial blood pressure (bp).
 # @return bloodPressure is a list that contains the APACHE scores for each patient.
 
-def get_bp_score(bp):
+def get_bp_score(bp, bp_1):
     if math.isnan(bp):
-        return math.nan
-    elif bp >= 140:
+        if math.isnan(bp_1):
+            return math.nan
+        else:
+            bp = bp_1
+    if bp >= 140:
         return 10
     elif 130 <= bp <= 139:
         return 9
@@ -67,10 +73,13 @@ def get_bp_score(bp):
 # This method assigns an APACHE score to temperature values.
 # @param temp is a panda Series containing all temperature data for all patients.
 # @return temperature is a panda Series containing temperature data in APACHE score values.
-def get_temp_score(temp):
+def get_temp_score(temp, temp_1):
     if math.isnan(temp):
-        return math.nan
-    elif temp >= 40:
+        if math.isnan(temp_1):
+            return math.nan
+        else:
+            temp = temp_1
+    if temp >= 40:
         return 4
     elif 35 <= temp <= 35.9:
         return 2
@@ -95,10 +104,13 @@ def get_temp_score(temp):
 # @param respRate is a panda Series containing respiratory rate values.
 # @ return respiratoryRate is a panda Series that contains respRate values in APACHE score values.
 
-def get_rr_score(rr, mech_vent):
+def get_rr_score(rr, mech_vent, rr_1):
     if math.isnan(rr):
-        return math.nan
-    elif rr >= 50:
+        if math.isnan(rr_1):
+            return math.nan
+        else:
+            rr = rr_1
+    if rr >= 50:
         return 18
     elif 40 <= rr <= 49:
         return 11
@@ -164,11 +176,14 @@ def getAaDO2APACHE(score):
     else:  # score >= 500:
         return 14
 
-def get_pao2(po2, mech_vent):
+def get_pao2(po2, mech_vent, po2_1):
     if mech_vent == 0:
         if math.isnan(po2):
-            return math.nan
-        elif po2 >= 80:
+            if math.isnan(po2_1):
+                return math.nan
+            else:
+                po2 = po2_1
+        if po2 >= 80:
             return 0
         elif 70 <= po2 <= 79:
             return 2
@@ -190,19 +205,13 @@ def get_hematocrit(hct, hct_d0, hct_d1):
             if math.isnan(hct_d1):
                 return math.nan
             else:
-                if 41 <= hct_d1 <= 49:
-                    return 0
-                else:
-                    return 3
+                hct = hct_d1
         else:
-            if 41 <= hct_d0 <= 49:
-                return 0
-            else:
-                return 3
-    else:
-        if 41 <= hct <= 49:
+            hct = hct_d0
+
+    if 41 <= hct <= 49:
             return 0
-        else:
+    else:
             return 3
 
 # WBC count:
@@ -215,32 +224,17 @@ def get_wbc(wbc, wbc_d0, wbc_d1):
             if math.isnan(wbc_d1):
                 return math.nan
             else:
-                if wbc_d0 >= 25 or 1.0 <= wbc_d0 <= 2.9:
-                    return 5
-                elif 20 <= wbc_d0 <= 24.9:
-                    return 1
-                elif wbc_d0 < 1.0:
-                    return 19
-                else:
-                    return 0
+                wbc = wbc_d1
         else:
-            if wbc_d0 >= 25 or 1.0 <= wbc_d0 <= 2.9:
-                return 5
-            elif 20 <= wbc_d0 <= 24.9:
-                return 1
-            elif wbc_d0 < 1.0:
-                return 19
-            else:
-                return 0
+            wbc = wbc_d1
+    if wbc >= 25 or 1.0 <= wbc <= 2.9:
+        return 5
+    elif 20 <= wbc <= 24.9:
+        return 1
+    elif wbc < 1.0:
+        return 19
     else:
-        if wbc >= 25 or 1.0 <= wbc <= 2.9:
-            return 5
-        elif 20 <= wbc <= 24.9:
-            return 1
-        elif wbc < 1.0:
-            return 19
-        else:
-            return 0
+        return 0
 
 #.....
 # If AKI use s/
@@ -256,7 +250,13 @@ def check_kidney_failure(cr_high, urine_out, esrd):
 # @param AKIStatus is a Panda Series containing booleans of a patients status of AKI / ARF.
 # @return A Panda Series containing scores for patients Creatinine levels.
 
-def get_cr(cr, aki):
+def get_cr(cr, aki, cr_1):
+    if math.isnan(cr):
+        if math.isnan(cr_1):
+            return math.nan
+        else:
+            cr = cr_1
+
     if not aki:  # use s/ Creatinine
         if cr >= 1.95:
             return 7
@@ -274,49 +274,6 @@ def get_cr(cr, aki):
 
 
 # ....
-
-
-# Urine Output:
-# This method converts given urine output measurements into APACHE-unit scores.
-# @param urineOut is a Panda Series containing all the patients and their corresponding urine outputs
-# @return a Panda Series with the urine outputs converted to scores.
-
-# In next, consider removing entire score.
-# Send Neha subjects with 15 in urine outs.
-def get_urine(urine, urine_d1):
-    if math.isnan(urine):
-        if math.isnan(urine_d1):
-            return math.nan
-        else:
-            if urine_d1 >= 4000:
-                return 1
-            elif 1500 <= urine_d1 <= 1999:
-                return 4
-            elif 900 <= urine_d1 <= 1499:
-                return 5
-            elif 600 <= urine_d1 <= 899:
-                return 7
-            elif 400 <= urine_d1 <= 599:
-                return 8
-            elif urine_d1 <= 399:
-                return 15
-            else:
-                return 0
-    else:
-        if urine >= 4000:
-            return 1
-        elif 1500 <= urine <= 1999:
-            return 4
-        elif 900 <= urine <= 1499:
-            return 5
-        elif 600 <= urine <= 899:
-            return 7
-        elif 400 <= urine <= 599:
-            return 8
-        elif urine <= 399:
-            return 15
-        else:
-            return 0
 
 # BUN: (Blood Urea Nitrogen) mg/dL
 # This method converts BUN levels into APACHE scores.
@@ -352,10 +309,14 @@ def get_bun(bun, bun_d1):
 # This method converts serum sodium levels into APACHE scores.
 # @param naLevel is a panda Series that patient values for sodium concentration in serum.
 # @return score is a panda Series that contains APACHE score values for corresponding sodium concentrations.
-def get_na(na):
+def get_na(na, na1):
     if math.isnan(na):
-        return math.nan
-    elif na >= 155:
+        if math.isnan(na1):
+            return math.nan
+        else:
+            na = na1
+
+    if na >= 155:
         return 4
     elif 120 <= na <= 134:
         return 2
