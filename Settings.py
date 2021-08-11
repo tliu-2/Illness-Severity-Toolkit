@@ -1,8 +1,9 @@
 # This file contains all the necessary values / whatever that are required to calculate APACHE scores.
 import math
 
-# Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 
+# Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
+# These functions are meant to be used in a .apply setting
 
 def get_heart_rate_score(heart_rate, heart_rate_1=None):
     """
@@ -583,6 +584,11 @@ def get_ph_pco2(ph, pco2):
 # @return a Panda Series containing the age in APACHE-unit scores.
 
 def get_age(age):
+    """
+    Assigns an APACHE score for a given age.
+    :param age: age of the subject
+    :return: APACHE score based on age.
+    """
     if math.isnan(age):
         return math.nan
     elif age >= 85:
@@ -604,6 +610,11 @@ def get_age(age):
 # This method checks if the patient has cirrhosis.
 
 def check_cirr(cirr):
+    """
+    Assigns an APACHE score for cirrhosis
+    :param cirr: cirrhosis status
+    :return: APACHE score based on whether a subject has cirrhosis or not.
+    """
     if cirr == 1:
         return 4
     elif cirr == 2:
@@ -615,6 +626,11 @@ def check_cirr(cirr):
 # This method checks if the patient has cancer.
 
 def check_cancer(cancer):
+    """
+    Assigns an APACHE score for a given cancer status.
+    :param cancer: cancer status
+    :return: APACHE score based on whether a subject has cancer.
+    """
     # Unable to check for type of cancer, APACHE score will be off +- 3
     # This program will assume the worst meaning if cancer == yes, use score of Lymphoma
     if cancer == 1:
@@ -628,6 +644,13 @@ def check_cancer(cancer):
 # This method checks if the patient is immuno-suppressed.
 
 def check_immuno_sup(organtx, sct, prednisone):
+    """
+    Assigns an APACHE score based on immunocompromised / suppressed status
+    :param organtx: orgran transplant status
+    :param sct: stem cell transplant status
+    :param prednisone: prednisone status
+    :return: APACHE score
+    """
     if math.isnan(organtx) and math.isnan(sct) and math.isnan(prednisone):
         return math.nan
     elif organtx == 1 or sct == 1 or prednisone == 1:
@@ -644,6 +667,11 @@ def check_immuno_sup(organtx, sct, prednisone):
 # This method converts the visual score into the simplified scores.
 
 def gcs_visual(visual):
+    """
+    Simplifies gcs visual scores based on the 1991 APACHE III Paper
+    :param visual: gcs visual score
+    :return: simplified gcs visual score
+    """
     if math.isnan(visual):
         return math.nan
     elif visual > 1:  # Spontaneous eye opening.
@@ -657,6 +685,11 @@ def gcs_visual(visual):
 # This method converts motor scores into the simplified scores.
 
 def gcs_motor(motor):
+    """
+    Simplifies gcs motor scores based on the 1991 APACHE III Paper
+    :param motor: gcs motor score
+    :return: simplified gcs motor score
+    """
     if math.isnan(motor):
         return math.nan
     elif motor == 1 or motor == 2:  # No response and Decerebrate Rigidity
@@ -672,6 +705,11 @@ def gcs_motor(motor):
 # This method converts verbal scores into the simplified scores given in the article.
 
 def gcs_verbal(verbal):
+    """
+    Simplifies gcs verbal scores based on the 1991 APACHE III Paper
+    :param verbal: gcs verbal score
+    :return: simplified gcs verbal score
+    """
     if math.isnan(verbal):
         return math.nan
     elif verbal == 1:
@@ -687,6 +725,13 @@ def gcs_verbal(verbal):
 # This method is converts the Glasgow Coma scores into APACHE scores.
 
 def gcs_combined(visual, motor, verbal):
+    """
+    Assigns an APACHE score based on the combination of the simplified gcs scores
+    :param visual: simplified gcs visual score
+    :param motor: simplified gcs motor score
+    :param verbal: simplified gcs verbal score
+    :return: APACHE score
+    """
     if visual == 2:  # spontaneous eye opening
         if verbal == 4:  # verbal is oriented
             if motor == 4:  # obeys verbal command

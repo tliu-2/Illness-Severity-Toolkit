@@ -6,7 +6,6 @@
 # (axis = 1) such that the row values are summed (total score for an individual).
 
 import pandas as pd
-# mport Settings_CHROME_Batch as Settings
 import Settings as Settings
 
 from tkinter import filedialog

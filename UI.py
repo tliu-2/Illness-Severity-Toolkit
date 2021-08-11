@@ -9,7 +9,7 @@ import subprocess
 global df
 
 
-def quit():
+def exit_program():
     import sys
     sys.exit()
 
@@ -19,8 +19,6 @@ def getCSV():
     csvfile = filedialog.askopenfilename(title="Select a CSV File", filetypes=(("csv files", "*.csv"),))
     csvdf = pd.read_csv(csvfile)
     df = csvdf
-    # dataset = d.Data(csvdf)
-    # calc.run(dataset)
 
 
 def run():
@@ -29,9 +27,8 @@ def run():
 
 # Finish writing when fully understand how to integrate python and stata
 # def run_sofa_stata():
-    # Insert do file later
-    # dofile =
-
+# Insert do file later
+# dofile =
 
 
 def apache_tab(tab_root):
@@ -44,6 +41,7 @@ def apache_tab(tab_root):
 def sofa_tab(tab_root):
     run_button = ttk.Button(tab_root, text='Run')
     run_button.pack()
+
 
 if __name__ == '__main__':
     root = Tk()
@@ -60,7 +58,7 @@ if __name__ == '__main__':
     sofa_tab(sofa)
     # setitles = Button(root, text='Set Titles', command=retrieve_inputs)
 
-    btn = Button(root, text='Quit', command=quit)
+    btn = Button(root, text='Quit', command=exit_program)
     btn.pack()
     root.title('Wurfel Lab Tools')
     root.mainloop()
