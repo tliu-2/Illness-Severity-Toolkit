@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import filedialog
+from tkinter import ttk
 import tkinter as tk
 import pandas as pd
 import Data_Headers as d
@@ -108,6 +109,11 @@ def retrieve_inputs():
         titles.append(entry.get())
 
 
+def apache_tab(tab_root):
+    run_button = ttk.Button(tab_root, text='Run', command=run)
+    run_button.pack()
+    import_button = ttk.Button(tab_root, text='Import File', command=getCSV)
+    import_button.pack()
 
 
 if __name__ == '__main__':
@@ -117,14 +123,19 @@ if __name__ == '__main__':
 
     runGUI()
 
-    run_button = Button(root, text='Run', command=run)
+    tabControl = ttk.Notebook(root)
+    apache = ttk.Frame(tabControl)
+    tab2 = ttk.Frame(tabControl)
+    tabControl.add(apache, text='APACHE')
+    tabControl.add(tab2, text='Tab 2')
+    tabControl.pack(expand=1, fill="both")
+
+    apache_tab(apache)
     # setitles = Button(root, text='Set Titles', command=retrieve_inputs)
-    run_button.pack()
-    calcbtn = Button(root, text='Import File', command=getCSV)
-    calcbtn.pack()
+
     btn = Button(root, text='Quit', command=quit)
     btn.pack()
-    root.title('Wurfel APACHE Score Calculator')
+    root.title('Wurfel Lab Tools')
     root.mainloop()
 
 

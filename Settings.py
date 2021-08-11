@@ -5,25 +5,31 @@ import pandas as pd
 import math
 import time
 
+
 def exportCSV(df):
     exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
     df.to_csv(exportfile, index=None, header=True)
 
+
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 
 
-def get_heart_rate_score(heart_rate, heart_rate_1):
+def get_heart_rate_score(heart_rate, heart_rate_1=None):
     """
-    Calculates APACHE score for heart rate
+    Assigns an APACHE score for heart rate
     :param heart_rate: 24h heart rate variable
     :param heart_rate_1: alternative heart rate variable used if heart_rate is missing
     :return: APACHE score for given heart rate
     """
     if math.isnan(heart_rate):
-        if math.isnan(heart_rate_1):
-            return math.nan
+        if heart_rate_1 is not None:
+            if math.isnan(heart_rate_1):
+                return math.nan
+            else:
+                heart_rate = heart_rate_1
         else:
-            heart_rate = heart_rate_1
+            return math.nan
+
     if heart_rate >= 155:
         return 17
     elif 154 >= heart_rate >= 140:
@@ -42,18 +48,22 @@ def get_heart_rate_score(heart_rate, heart_rate_1):
 
 # Mean Blood Pressure:
 
-def get_bp_score(bp, bp_1):
+def get_bp_score(bp, bp_1=None):
     """
-    Calculates APACHE score for blood pressure
+    Assigns an APACHE score for blood pressure
     :param bp: 24h mean arterial blood pressure value
     :param bp_1: alternative variable if 24h variable is missing
     :return: APACHE score for given blood pressure
     """
     if math.isnan(bp):
-        if math.isnan(bp_1):
-            return math.nan
+        if bp_1 is not None:
+            if math.isnan(bp_1):
+                return math.nan
+            else:
+                bp = bp_1
         else:
-            bp = bp_1
+            return math.nan
+
     if bp >= 140:
         return 10
     elif 130 <= bp <= 139:
@@ -72,20 +82,23 @@ def get_bp_score(bp, bp_1):
         return 0
 
 
-
 # Temperature:
-def get_temp_score(temp, temp_1):
+def get_temp_score(temp, temp_1=None):
     """
-    Calculates APACHE score for temperatures
+    Assigns an APACHE score for temperatures
     :param temp: 24h temperature value
     :param temp_1: alternative if 24h variable is missing / null
     :return: APACHE score for given temperature
     """
     if math.isnan(temp):
-        if math.isnan(temp_1):
-            return math.nan
+        if temp_1 is not None:
+            if math.isnan(temp_1):
+                return math.nan
+            else:
+                temp = temp_1
         else:
-            temp = temp_1
+            return math.nan
+
     if temp >= 40:
         return 4
     elif 35 <= temp <= 35.9:
@@ -102,7 +115,6 @@ def get_temp_score(temp, temp_1):
         return 0
 
 
-
 # Respiratory Rate:
 # To do:
 # Add conditionals for mechanically ventilated patients. DONE
@@ -111,19 +123,23 @@ def get_temp_score(temp, temp_1):
 # @param respRate is a panda Series containing respiratory rate values.
 # @ return respiratoryRate is a panda Series that contains respRate values in APACHE score values.
 
-def get_rr_score(rr, mech_vent, rr_1):
+def get_rr_score(rr, mech_vent, rr_1=None):
     """
-    Calculates APACHE score for respiratory rate
+    Assigns an APACHE score for respiratory rate
     :param rr: 24h respiratory rate value
     :param mech_vent: mechanical ventilation status at 8am
     :param rr_1: alternative if 24h variable is missing / null
     :return: APACHE score for given respiratory rate
     """
     if math.isnan(rr):
-        if math.isnan(rr_1):
-            return math.nan
+        if rr_1 is not None:
+            if math.isnan(rr_1):
+                return math.nan
+            else:
+                rr = rr_1
         else:
-            rr = rr_1
+            return math.nan
+
     if rr >= 50:
         return 18
     elif 40 <= rr <= 49:
@@ -156,19 +172,16 @@ def get_mech_vent(mech_vent):
         return 1
 
 
-
-
-# pO2, A - aDO2:
-# NOTE: Some patients were not mechanically ventilated.
-# This method takes in three parameters of pO2, fiO2, and pCO2. The method will first check if
-# the patient was mechanically ventilated and with a fiO2 of less / equal to 0.5. If the patient meets this,
-# a formula is used to calculate the gradientDif which is sent through another method (getAaDO2APACHE) for a APACHE
-# score interpretation.
-# Otherwise, checks scores normally.
-# @param po2, fio2, pco2 are panda Series that contains measurements of their corresponding labels.
-# @return score is a panda Series that contains APACHE score values for this metric.
-
 def get_aado2(po2, fio2, pco2, isMechVent):
+    """
+    Assigns an aado2 for patients who are mechanically ventilated and have an fio2 >= 50%. If the patient isn't
+    mechanically ventilated return 0 and use po2 APACHE score instead.
+    :param po2: 24h / d0 value for po2
+    :param fio2: abg fio2 value
+    :param pco2: 24h / d0 ph value for po2
+    :param isMechVent: mechanical ventiliation status
+    :return: APACHE score based on aado2 value
+    """
     if math.isnan(po2) or math.isnan(fio2) or math.isnan(pco2):
         return math.nan
     # Check if patient is mechanically ventilated and has an fiO2 level >= 0.5
@@ -180,10 +193,16 @@ def get_aado2(po2, fio2, pco2, isMechVent):
     else:  # Patient not mechanically ventilated / not have a fiO2 level of at least 0.5
         return 0
 
+
 # This method is solely used when a patient is mechanically ventilated and has a fiO2 <= 0.5
 # @param score is a panda Series containing the calculated AaDO2 value.
 # @return APACHE values for a calculated value.
 def getAaDO2APACHE(score):
+    """
+    Helper to the aado2 function - actually Assigns the APACHE score based on an aado2 value.
+    :param score: calculated aado2 value
+    :return: APACHE score based on the passed value
+    """
     if score < 100:
         return 0
     elif 100 <= score <= 249:
@@ -195,13 +214,25 @@ def getAaDO2APACHE(score):
     else:  # score >= 500:
         return 14
 
-def get_pao2(po2, mech_vent, po2_1):
+
+def get_pao2(po2, mech_vent, po2_1=None):
+    """
+    Assigns an APACHE score for po2. Only used when patient is not mechanically ventilated.
+    :param po2: 24h / d0 po2 value
+    :param mech_vent: mechanical ventilation status
+    :param po2_1: alternative po2 value if 24h / d0 is missing
+    :return: APACHE score based on either po2 or po2_1
+    """
     if mech_vent == 0:
-        if math.isnan(po2):
-            if math.isnan(po2_1):
-                return math.nan
-            else:
-                po2 = po2_1
+        if po2_1 is not None:
+            if math.isnan(po2):
+                if math.isnan(po2_1):
+                    return math.nan
+                else:
+                    po2 = po2_1
+        else:
+            return math.nan
+
         if po2 >= 80:
             return 0
         elif 70 <= po2 <= 79:
@@ -218,34 +249,58 @@ def get_pao2(po2, mech_vent, po2_1):
 # This method converts hematocrit measurements into APACHE scores.
 # @param critScore is a panda Series that contains patient values for Hematocrit
 # @return score is a panda Series that contains APACHE values for a corresponding hematocrit level in patients.
-def get_hematocrit(hct, hct_d0, hct_d1):
+def get_hematocrit(hct, hct_d0=None, hct_d1=None):
+    """
+    Assigns an APACHE score based on hematocrit measurements. Assumes if hct_d0 is missing then hct_d1 is also missing.
+    :param hct: 24h hematocrit values
+    :param hct_d0: d0 alternative value if 24h is missing
+    :param hct_d1: d1 alternative value if both d0 and 24h are missing
+    :return: APACHE score based on hematocrit measurements
+    """
     if math.isnan(hct):
-        if math.isnan(hct_d0):
-            if math.isnan(hct_d1):
-                return math.nan
+        if hct_d0 is not None:
+            if math.isnan(hct_d0):
+                if hct_d1 is not None:
+                    if math.isnan(hct_d1):
+                        return math.nan
+                    else:
+                        hct = hct_d1
+                else:
+                    return math.nan
             else:
-                hct = hct_d1
+                hct = hct_d0
         else:
-            hct = hct_d0
+            return math.nan
 
     if 41 <= hct <= 49:
-            return 0
+        return 0
     else:
-            return 3
+        return 3
+
 
 # WBC count:
 # This method converts white blood cell counts (WBC) into APACHE scores.
 # @param wbcCount is a panda Series containing patient values of white blood cell count.
 # @return score is a panda Series containing APACHE score values for white blood cell counts.
-def get_wbc(wbc, wbc_d0, wbc_d1):
+def get_wbc(wbc, wbc_d0=None, wbc_d1=None):
+    """
+    Assigns an APACHE score based on wbc measurements.
+    :param wbc: 24h wbc value
+    :param wbc_d0: d0 alternative if 24h is missing
+    :param wbc_d1: d1 alternative if both 24h and d0 are missing
+    :return:
+    """
     if math.isnan(wbc):
-        if math.isnan(wbc_d0):
-            if math.isnan(wbc_d1):
-                return math.nan
+        if wbc_d0 is not None:
+            if math.isnan(wbc_d0):
+                if wbc_d1 is not None:
+                    if math.isnan(wbc_d1):
+                        return math.nan
+                    else:
+                        wbc = wbc_d1
             else:
-                wbc = wbc_d1
-        else:
-            wbc = wbc_d1
+                wbc = wbc_d0
+
     if wbc >= 25 or 1.0 <= wbc <= 2.9:
         return 5
     elif 20 <= wbc <= 24.9:
@@ -255,14 +310,16 @@ def get_wbc(wbc, wbc_d0, wbc_d1):
     else:
         return 0
 
-#.....
+
+# .....
 # If AKI use s/
 # If no AKI use c/
 def check_kidney_failure(cr_high, urine_out, esrd):
-    if cr_high > 1.5 and urine_out < 410 and esrd == 1: # Consider removing urine_out
+    if cr_high > 1.5 and urine_out < 410 and esrd == 1:  # Consider removing urine_out
         return True
     else:
         return False
+
 
 # This method specifically calculates the score of patients for the Creatinine category
 # @param crLevel is the corresponding crLevel of the patient from the .csv file.
@@ -323,6 +380,7 @@ def get_bun(bun, bun_d1):
             return 11
         else:  # bun[x] >= 80
             return 12
+
 
 # Sodium:
 # This method converts serum sodium levels into APACHE scores.
@@ -386,6 +444,7 @@ def get_bilirubin(bili, bili_d1):
     else:
         return 0
 
+
 # Glucose: mg/dL
 # This method assigns an APACHE score to a measurement of serum glucose.
 # @param glucose is a panda Series containing pateint values of glucose in serum.
@@ -397,7 +456,7 @@ def get_glucose(glucose, gluc_d1):
             return math.nan
         else:
             glucose = gluc_d1
-            
+
     if glucose >= 330:
         return 5
     elif 200 <= glucose <= 349:
@@ -408,6 +467,7 @@ def get_glucose(glucose, gluc_d1):
         return 8
     else:
         return 0
+
 
 # The following scores are for Figures 2 and 3.
 
@@ -462,6 +522,7 @@ def get_ph_pco2(ph, pco2):
         else:
             return 12
 
+
 # Cormobidities: Cirhosis, Leukemnia, Age, etc.
 # This method convers a patients age into a corresponding score.
 # @param age is a Panda Series containing the age of all patients.
@@ -496,6 +557,7 @@ def check_cirr(cirr):
     else:
         return math.nan
 
+
 # This method checks if the patient has cancer.
 
 def check_cancer(cancer):
@@ -508,6 +570,7 @@ def check_cancer(cancer):
     else:
         return math.nan
 
+
 # This method checks if the patient is immuno-suppressed.
 
 def check_immuno_sup(organtx, sct, prednisone):
@@ -517,6 +580,7 @@ def check_immuno_sup(organtx, sct, prednisone):
         return 10
     else:
         return 0
+
 
 # Glasgow Coma Scale:
 # As per the article: eliminating the distinctions between incomprehensible words and inappropriate sounds,
@@ -564,6 +628,7 @@ def gcs_verbal(verbal):
         return 3
     else:
         return 4
+
 
 # This method is converts the Glasgow Coma scores into APACHE scores.
 
