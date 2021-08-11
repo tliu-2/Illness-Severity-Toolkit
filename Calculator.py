@@ -10,22 +10,101 @@ import pandas as pd
 import Settings as Settings
 
 
-def run(dataset):
+def setup(csv_file):
+    """
+    Pulls all necessary variables from the dataset
+    :param csv_file: A csv_file loaded into a pandas dataframe
+    :return: A pandas dataframe containing all the necessary variables to calculate an APACHE score.
+    """
+    final = pd.DataFrame()
+    # Main variable pull
+    final['study_id'] = csv_file['study_id']
+    final['age'] = csv_file['age']
+    final['cirrhosis'] = csv_file['cirr']
+    final['cancer'] = csv_file['cancer']
+    final['esrd'] = csv_file['esrd']
+    final['coma_visual'] = csv_file['lo_gcs_visual_d0']
+    final['coma_verbal'] = csv_file['lo_gcs_verbal_d0']
+    final['coma_motor'] = csv_file['lo_gcs_motor_d0']
+    final['hi_hr_24h'] = csv_file['hi_hr_24h']
+    final['lo_hr_24h'] = csv_file['lo_hr_24h']
+    final['hi_map_24h'] = csv_file['hi_map_24h']
+    final['lo_map_24h'] = csv_file['lo_map_24h']
+    final['hi_temp_24h'] = csv_file['hi_temp_24h']
+    final['lo_temp_24h'] = csv_file['lo_temp_24h']
+    final['hi_rr_24h'] = csv_file['hi_rr_24h']
+    final['lo_rr_24h'] = csv_file['lo_rr_24h']
+    final['hi_po2_24h'] = csv_file['hi_po2_24h']
+    final['lo_po2_24h'] = csv_file['lo_po2_24h']
+    final['intubated_8am_d0'] = csv_file['intubated_8am_d0']
+    final['abg_hi_fio2_24h'] = csv_file['abg_hi_fio2_24h']
+    final['abg_lo_fio2_24h'] = csv_file['abg_lo_fio2_24h']
+    final['ph_hi_co2_d0'] = csv_file['ph_hi_co2_d0']
+    final['ph_lo_co2_d0'] = csv_file['ph_lo_co2_d0']
+    final['hi_hct_24h'] = csv_file['hi_hct_24h']
+    final['lo_hct_24h'] = csv_file['lo_hct_24h']
+    final['hi_wbc_24h'] = csv_file['hi_wbc_24h']
+    final['lo_wbc_24h'] = csv_file['lo_wbc_24h']
+    final['hi_na_24h'] = csv_file['hi_na_24h']
+    final['lo_na_24h'] = csv_file['lo_na_24h']
+    final['hi_alb_d0'] = csv_file['hi_alb_d0']
+    final['lo_alb_d0'] = csv_file['lo_alb_d0']
+    final['tbil_d0'] = csv_file['tbil_d0']
+    final['hi_gluc_d0'] = csv_file['hi_gluc_d0']
+    final['lo_gluc_d0'] = csv_file['lo_gluc_d0']
+    final['hi_urea_d0'] = csv_file['hi_urea_d0']
+    final['lo_urea_d0'] = csv_file['lo_urea_d0']
+    final['hi_cr_24h'] = csv_file['hi_cr_24h']
+    final['lo_cr_24h'] = csv_file['lo_cr_24h']
+    final['urine_out_d0'] = csv_file['urine_out_d0']
+    final['lo_ph_24h'] = csv_file['lo_ph_24h']
+    final['organtx'] = csv_file['organtx']
+    final['sct'] = csv_file['sct']
+    final['hiv'] = csv_file['hiv']
+    final['cd4'] = csv_file['cd4']
+    final['prednisone'] = csv_file['prednisone']
+    final['pred_dose'] = csv_file['pred_dose']
+
+    # Alternative values pull
+    final['lo_wbc_d0'] = csv_file['lo_wbc_d0']
+    final['hi_wbc_d0'] = csv_file['hi_wbc_d0']
+    final['lo_wbc_d1'] = csv_file['lo_wbc_d1']
+    final['hi_wbc_d1'] = csv_file['hi_wbc_d1']
+    final['lo_hct_d0'] = csv_file['lo_hct_d0']
+    final['lo_hct_d1'] = csv_file['lo_hct_d1']
+    final['hi_hct_d0'] = csv_file['hi_hct_d0']
+    final['hi_hct_d1'] = csv_file['hi_hct_d1']
+    final['lo_alb_d1'] = csv_file['lo_alb_d1']
+    final['hi_alb_d1'] = csv_file['hi_alb_d1']
+    final['urine_out_d1'] = csv_file['urine_out_d1']
+    final['lo_urea_d1'] = csv_file['lo_urea_d1']
+    final['hi_urea_d1'] = csv_file['hi_urea_d1']
+    final['lo_gluc_d1'] = csv_file['lo_gluc_d1']
+    final['hi_gluc_d1'] = csv_file['hi_gluc_d1']
+    final['tbil_d1'] = csv_file['tbil_d1']
+    final['intubated_8am_d1'] = csv_file['intubated_8am_d1']
+
+    return final
+
+
+def run(csv_file):
+    df = setup(csv_file)
     sumdf = pd.DataFrame([])
-    #  PROTOTYPE .APPLY VARIANT FOR APACHE CALC
+
     temp_high = pd.Series([])
     temp_low = pd.Series([])
 
-    sumdf['Age'] = dataset.age.apply(Settings.get_age)
-    sumdf['Cirrhosis'] = dataset.cirrhosisStatus.apply(Settings.check_cirr)
-    sumdf['Cancer'] = dataset.cancerStat.apply(Settings.check_cancer)
+    sumdf['Age'] = df['age'].apply(Settings.get_age)
+    sumdf['Cirrhosis'] = df['cirrhosis'].apply(Settings.check_cirr)
+    sumdf['Cancer'] = df['cancer'].apply(Settings.check_cancer)
 
-    sumdf['organtx'] = dataset.organtx
-    sumdf['sct'] = dataset.sct
-    sumdf['hiv'] = dataset.hiv
-    sumdf['cd4'] = dataset.cd4
-    sumdf['prednisone'] = dataset.prednisone
-    sumdf['Immunosuppression'] = sumdf.apply(lambda x: Settings.check_immuno_sup(x['organtx'], x['sct'], x['prednisone']), axis=1)
+    sumdf['organtx'] = df['organtx']
+    sumdf['sct'] = df['sct']
+    sumdf['hiv'] = df['hiv']
+    sumdf['cd4'] = df['cd4']
+    sumdf['prednisone'] = df['prednisone']
+    sumdf['Immunosuppression'] = sumdf.apply(
+        lambda x: Settings.check_immuno_sup(x['organtx'], x['sct'], x['prednisone']), axis=1)
     sumdf['HIV / AIDS'] = sumdf.apply(lambda x: Settings.check_hiv_aids(x['hiv'], x['cd4']), axis=1)
     sumdf = sumdf.drop(columns=['organtx', 'sct', 'hiv', 'cd4', 'prednisone'])
 
@@ -57,8 +136,10 @@ def run(dataset):
     sumdf['pCO2 High'] = dataset.pCO2High
     sumdf['pCO2 Low'] = dataset.pCO2Low
 
-    sumdf['AaDO2 High Score'] = sumdf.apply(lambda x: Settings.get_aado2(x['pO2 High'], x['fiO2 High'], x['pCO2 High'], x['Mech Vent']), axis=1)
-    sumdf['AaDO2 Low Score'] = sumdf.apply(lambda x: Settings.get_aado2(x['pO2 Low'], x['fiO2 Low'], x['pCO2 Low'], x['Mech Vent']), axis=1)
+    sumdf['AaDO2 High Score'] = sumdf.apply(
+        lambda x: Settings.get_aado2(x['pO2 High'], x['fiO2 High'], x['pCO2 High'], x['Mech Vent']), axis=1)
+    sumdf['AaDO2 Low Score'] = sumdf.apply(
+        lambda x: Settings.get_aado2(x['pO2 Low'], x['fiO2 Low'], x['pCO2 Low'], x['Mech Vent']), axis=1)
     sumdf['AaDO2'] = sumdf['AaDO2 High Score'].combine(sumdf['AaDO2 Low Score'], max, fill_value=0)
     sumdf = sumdf.drop(columns=['AaDO2 High Score', 'AaDO2 Low Score', 'fiO2 High', 'fiO2 Low', 'pCO2 High'])
 
@@ -73,10 +154,13 @@ def run(dataset):
     sumdf['hct hi d0'] = dataset.hi_hct_d0
     sumdf['hct lo d1'] = dataset.lo_hct_d1
     sumdf['hct hi d1'] = dataset.hi_hct_d1
-    sumdf['hct lo'] = sumdf.apply(lambda x: Settings.get_hematocrit(x['hct lo 24h'], x['hct lo d0'], x['hct lo d1']), axis=1)
-    sumdf['hct hi'] = sumdf.apply(lambda x: Settings.get_hematocrit(x['hct hi 24h'], x['hct hi d0'], x['hct hi d1']), axis=1)
+    sumdf['hct lo'] = sumdf.apply(lambda x: Settings.get_hematocrit(x['hct lo 24h'], x['hct lo d0'], x['hct lo d1']),
+                                  axis=1)
+    sumdf['hct hi'] = sumdf.apply(lambda x: Settings.get_hematocrit(x['hct hi 24h'], x['hct hi d0'], x['hct hi d1']),
+                                  axis=1)
     sumdf['HCT'] = sumdf['hct hi'].combine(sumdf['hct lo'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['hct lo 24h', 'hct hi 24h', 'hct lo d0', 'hct hi d0', 'hct lo d1', 'hct hi d1', 'hct lo', 'hct hi'])
+    sumdf = sumdf.drop(
+        columns=['hct lo 24h', 'hct hi 24h', 'hct lo d0', 'hct hi d0', 'hct lo d1', 'hct hi d1', 'hct lo', 'hct hi'])
 
     sumdf['wbc low 24h'] = dataset.wbcLow
     sumdf['wbc high 24h'] = dataset.wbcHigh
@@ -84,10 +168,14 @@ def run(dataset):
     sumdf['wbc high d0'] = dataset.hi_wbc_d0
     sumdf['wbc low d1'] = dataset.lo_wbc_d1
     sumdf['wbc high d1'] = dataset.hi_wbc_d1
-    sumdf['wbc lo'] = sumdf.apply(lambda x: Settings.get_wbc(x['wbc low 24h'], x['wbc low d0'], x['wbc low d1']), axis=1)
-    sumdf['wbc hi'] = sumdf.apply(lambda x: Settings.get_wbc(x['wbc high 24h'], x['wbc high d0'], x['wbc high d1']), axis=1)
+    sumdf['wbc lo'] = sumdf.apply(lambda x: Settings.get_wbc(x['wbc low 24h'], x['wbc low d0'], x['wbc low d1']),
+                                  axis=1)
+    sumdf['wbc hi'] = sumdf.apply(lambda x: Settings.get_wbc(x['wbc high 24h'], x['wbc high d0'], x['wbc high d1']),
+                                  axis=1)
     sumdf['WBC'] = sumdf['wbc hi'].combine(sumdf['wbc lo'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['wbc low 24h', 'wbc high 24h', 'wbc low d0', 'wbc high d0', 'wbc low d1', 'wbc high d1', 'wbc lo', 'wbc hi'])
+    sumdf = sumdf.drop(
+        columns=['wbc low 24h', 'wbc high 24h', 'wbc low d0', 'wbc high d0', 'wbc low d1', 'wbc high d1', 'wbc lo',
+                 'wbc hi'])
 
     sumdf['cr high'] = dataset.crHigh
     sumdf['urine'] = dataset.urineOut
@@ -140,13 +228,13 @@ def run(dataset):
     sumdf['GCS Visual'] = dataset.comaVisual.apply(Settings.gcs_visual)
     sumdf['GCS Motor'] = dataset.comaMotor.apply(Settings.gcs_motor)
     sumdf['GCS Verbal'] = dataset.comaVerbal.apply(Settings.gcs_verbal)
-    sumdf['GCS Coma'] = sumdf.apply(lambda x: Settings.gcs_combined(x['GCS Visual'], x['GCS Motor'], x['GCS Verbal']), axis=1)
+    sumdf['GCS Coma'] = sumdf.apply(lambda x: Settings.gcs_combined(x['GCS Visual'], x['GCS Motor'], x['GCS Verbal']),
+                                    axis=1)
     sumdf = sumdf.drop(columns=['GCS Visual', 'GCS Motor', 'GCS Verbal'])
 
     sumdf['ph'] = dataset.pHLow
     sumdf['pH and pCO2'] = sumdf.apply(lambda x: Settings.get_ph_pco2(x['ph'], x['pCO2 Low']), axis=1)
     sumdf = sumdf.drop(columns=['ph', 'pCO2 Low'])
-
 
     sumdf['Score'] = sumdf.sum(axis=1)
     sumdf['Study ID'] = dataset.studyID
