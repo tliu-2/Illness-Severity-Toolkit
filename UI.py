@@ -2,9 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 from tkinter import filedialog
 from tkinter import ttk
-import tkinter as tk
 import pandas as pd
-import Data_Headers as d
 import Calculator as calc
 
 global df

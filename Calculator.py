@@ -9,6 +9,13 @@ import pandas as pd
 # mport Settings_CHROME_Batch as Settings
 import Settings as Settings
 
+from tkinter import filedialog
+
+
+def exportCSV(df):
+    exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
+    df.to_csv(exportfile, index=None, header=True)
+
 
 def run(df):
     sumdf = pd.DataFrame([])
@@ -164,8 +171,6 @@ def run(df):
     study_id = sumdf.pop('Study ID')
     sumdf.insert(0, 'Score', score)
     sumdf.insert(0, 'Study_ID', study_id)
-    Settings.exportCSV(sumdf)
+    exportCSV(sumdf)
     print(sumdf['Score'])
     print(sumdf)
-
-    # PROTOYPE END

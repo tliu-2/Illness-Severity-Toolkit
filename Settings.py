@@ -1,15 +1,5 @@
 # This file contains all the necessary values / whatever that are required to calculate APACHE scores.
-import tkinter as tk
-from tkinter import filedialog
-import pandas as pd
 import math
-import time
-
-
-def exportCSV(df):
-    exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
-    df.to_csv(exportfile, index=None, header=True)
-
 
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 
