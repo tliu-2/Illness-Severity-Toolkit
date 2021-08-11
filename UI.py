@@ -4,8 +4,10 @@ from tkinter import filedialog
 from tkinter import ttk
 import pandas as pd
 import Calculator as calc
+import subprocess
 
 global df
+
 
 def quit():
     import sys
@@ -20,8 +22,17 @@ def getCSV():
     # dataset = d.Data(csvdf)
     # calc.run(dataset)
 
+
 def run():
-    calc.run(dataset)
+    calc.run(df)
+
+
+# Finish writing when fully understand how to integrate python and stata
+# def run_sofa_stata():
+    # Insert do file later
+    # dofile =
+
+
 
 def apache_tab(tab_root):
     run_button = ttk.Button(tab_root, text='Run', command=run)
@@ -30,23 +41,26 @@ def apache_tab(tab_root):
     import_button.pack()
 
 
+def sofa_tab(tab_root):
+    run_button = ttk.Button(tab_root, text='Run')
+    run_button.pack()
+
 if __name__ == '__main__':
     root = Tk()
 
     root.geometry("300x300")
     tabControl = ttk.Notebook(root)
     apache = ttk.Frame(tabControl)
-    tab2 = ttk.Frame(tabControl)
+    sofa = ttk.Frame(tabControl)
     tabControl.add(apache, text='APACHE')
-    tabControl.add(tab2, text='Tab 2')
+    tabControl.add(sofa, text='SOFA')
     tabControl.pack(expand=1, fill="both")
 
     apache_tab(apache)
+    sofa_tab(sofa)
     # setitles = Button(root, text='Set Titles', command=retrieve_inputs)
 
     btn = Button(root, text='Quit', command=quit)
     btn.pack()
     root.title('Wurfel Lab Tools')
     root.mainloop()
-
-
