@@ -298,8 +298,12 @@ def get_wbc(wbc, wbc_d0=None, wbc_d1=None):
                         return math.nan
                     else:
                         wbc = wbc_d1
+                else:
+                    return math.nan
             else:
                 wbc = wbc_d0
+        else:
+            return math.nan
 
     if wbc >= 25 or 1.0 <= wbc <= 2.9:
         return 5
@@ -315,6 +319,13 @@ def get_wbc(wbc, wbc_d0=None, wbc_d1=None):
 # If AKI use s/
 # If no AKI use c/
 def check_kidney_failure(cr_high, urine_out, esrd):
+    """
+    Checks if a subject has kidney failure based on their creatinine, urine output, and end stage renal disease status.
+    :param cr_high: high creatinine values in 24h
+    :param urine_out: urine output in 24h
+    :param esrd: end stage renal disease status
+    :return: true or false based on these values.
+    """
     if cr_high > 1.5 and urine_out < 410 and esrd == 1:  # Consider removing urine_out
         return True
     else:
@@ -326,12 +337,22 @@ def check_kidney_failure(cr_high, urine_out, esrd):
 # @param AKIStatus is a Panda Series containing booleans of a patients status of AKI / ARF.
 # @return A Panda Series containing scores for patients Creatinine levels.
 
-def get_cr(cr, aki, cr_1):
+def get_cr(cr, aki, cr_1=None):
+    """
+    Assigns an APACHE score for creatinine values and kidney failure.
+    :param cr: 24h creatinine values
+    :param aki: kidney failure status
+    :param cr_1: alternative creatinine values if 24h is missing
+    :return: APACHE score based on creatinine and kindey failure.
+    """
     if math.isnan(cr):
-        if math.isnan(cr_1):
-            return math.nan
+        if cr_1 is not None:
+            if math.isnan(cr_1):
+                return math.nan
+            else:
+                cr = cr_1
         else:
-            cr = cr_1
+            return math.nan
 
     if not aki:  # use s/ Creatinine
         if cr >= 1.95:
@@ -354,44 +375,53 @@ def get_cr(cr, aki, cr_1):
 # BUN: (Blood Urea Nitrogen) mg/dL
 # This method converts BUN levels into APACHE scores.
 
-def get_bun(bun, bun_d1):
+def get_bun(bun, bun_d1=None):
+    """
+    Assigns an APACHE score for given Blood Urea Nitrogen (BUN) values
+    :param bun: 24h bun values
+    :param bun_d1: alternative bun values if 24h values are missing
+    :return: APACHE score for given values
+    """
     if math.isnan(bun):
-        if math.isnan(bun_d1):
-            return math.nan
+        if bun_d1 is not None:
+            if math.isnan(bun_d1):
+                return math.nan
+            else:
+                bun = bun_d1
         else:
-            if bun_d1 <= 16.9:
-                return 0
-            elif 17 <= bun_d1 <= 19:
-                return 2
-            elif 20 <= bun_d1 <= 39:
-                return 7
-            elif 40 <= bun_d1 <= 79:
-                return 11
-            else:  # bun[x] >= 80
-                return 12
-    else:
-        if bun <= 16.9:
-            return 0
-        elif 17 <= bun <= 19:
-            return 2
-        elif 20 <= bun <= 39:
-            return 7
-        elif 40 <= bun <= 79:
-            return 11
-        else:  # bun[x] >= 80
-            return 12
+            return math.nan
+
+    if bun <= 16.9:
+        return 0
+    elif 17 <= bun <= 19:
+        return 2
+    elif 20 <= bun <= 39:
+        return 7
+    elif 40 <= bun <= 79:
+        return 11
+    else:  # bun[x] >= 80
+        return 12
 
 
 # Sodium:
 # This method converts serum sodium levels into APACHE scores.
 # @param naLevel is a panda Series that patient values for sodium concentration in serum.
 # @return score is a panda Series that contains APACHE score values for corresponding sodium concentrations.
-def get_na(na, na1):
+def get_na(na, na1=None):
+    """
+    Assigns an APACHE score for given serum sodium values.
+    :param na: 24h sodium values
+    :param na1: alternative sodium values if 24h is missing
+    :return: APACHE scores for given values
+    """
     if math.isnan(na):
-        if math.isnan(na1):
-            return math.nan
+        if na1 is not None:
+            if math.isnan(na1):
+                return math.nan
+            else:
+                na = na1
         else:
-            na = na1
+            return math.nan
 
     if na >= 155:
         return 4
@@ -407,12 +437,21 @@ def get_na(na, na1):
 # This method converts serum albumin levels into APACHE scores.
 # @param albLevel is a panda Series that contains patient values for albumin levels in serum.
 # @return score is a panda Series that contains APACHE score values for corresponding albumin levels.
-def get_alb(alb, alb_d1):
+def get_alb(alb, alb_d1=None):
+    """
+    Assigns an APACHE score for given serum albumin values.
+    :param alb: 24h albumin values
+    :param alb_d1: alternative albumin values if 24h values are missing
+    :return: APACHE score based on the given values.
+    """
     if math.isnan(alb):
-        if math.isnan(alb_d1):
-            return math.nan
+        if alb_d1 is not None:
+            if math.isnan(alb_d1):
+                return math.nan
+            else:
+                alb = alb_d1
         else:
-            alb = alb_d1
+            return math.nan
 
     if alb >= 4.5:
         return 4
@@ -429,12 +468,22 @@ def get_alb(alb, alb_d1):
 # @param bilirubinLevels is a panda Series containing patient values for bilirubin in serum.
 # @return score is a panda Series containing APACHE score values for corresponding bilirubin levels.
 
-def get_bilirubin(bili, bili_d1):
+def get_bilirubin(bili, bili_d1=None):
+    """
+    Assigns an APACHE score for given bilirubin values
+    :param bili: 24h / d0 bilirubin values
+    :param bili_d1: alternative bilirubin values if 24h / d0 are missing
+    :return: APACHE score based on values
+    """
     if math.isnan(bili):
-        if math.isnan(bili_d1):
-            return math.nan
+        if bili_d1 is not None:
+            if math.isnan(bili_d1):
+                return math.nan
+            else:
+                bili = bili_d1
         else:
-            bili = bili_d1
+            return math.nan
+
     if bili >= 8.0:
         return 16
     elif 3.0 <= bili <= 4.9:
@@ -450,12 +499,21 @@ def get_bilirubin(bili, bili_d1):
 # @param glucose is a panda Series containing pateint values of glucose in serum.
 # @return scores is a panda Series containing APACHE score values for corresponding glucose levels.
 
-def get_glucose(glucose, gluc_d1):
+def get_glucose(glucose, gluc_d1=None):
+    """
+    Assigns an APACHE score for given glucose values
+    :param glucose: 24h / d0 glucose values
+    :param gluc_d1: alternative glucose values if 24h / d0 are missing
+    :return: APACHE score based on given values.
+    """
     if math.isnan(glucose):
-        if math.isnan(gluc_d1):
-            return math.nan
+        if gluc_d1 is not None:
+            if math.isnan(gluc_d1):
+                return math.nan
+            else:
+                glucose = gluc_d1
         else:
-            glucose = gluc_d1
+            return math.nan
 
     if glucose >= 330:
         return 5
@@ -478,6 +536,12 @@ def get_glucose(glucose, gluc_d1):
 # @param pCO2 is a Panda Series containing the pCO2 levels of patients.
 # @return a Panda Series containing APACHE-unit scores for these two categories.
 def get_ph_pco2(ph, pco2):
+    """
+    Assigns an APACHE score for given pH and pCO2 values.
+    :param ph: 24h / d0 pH values
+    :param pco2: 24h / d0 pCO2 values
+    :return: APACHE score based on given values.
+    """
     if math.isnan(ph) or math.isnan(pco2):
         return math.nan
     elif ph < 7.2:
