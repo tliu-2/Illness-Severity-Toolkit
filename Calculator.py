@@ -113,10 +113,11 @@ def run(df):
     sumdf['Creatinine'] = sumdf.apply(lambda x: Settings.get_cr(x['cr high'], x['ARF']), axis=1)
     sumdf = sumdf.drop(columns=['cr high', 'urine', 'esrd', 'ARF'])
 
-    sumdf['urine d0'] = df['urine_out_d0']
-    sumdf['urine d1'] = df['urine_out_d1']
-    sumdf['Urine'] = sumdf.apply(lambda x: Settings.get_urine(x['urine d0'], x['urine d1']), axis=1)
-    sumdf = sumdf.drop(columns=['urine d0', 'urine d1'])
+    # Urine pending removal decision
+    # sumdf['urine d0'] = df['urine_out_d0']
+    # sumdf['urine d1'] = df['urine_out_d1']
+    # sumdf['Urine'] = sumdf.apply(lambda x: Settings.get_urine(x['urine d0'], x['urine d1']), axis=1)
+    # sumdf = sumdf.drop(columns=['urine d0', 'urine d1'])
 
     sumdf['lo urea d0'] = df['lo_urea_d0']
     sumdf['hi urea d0'] = df['hi_urea_d0']
