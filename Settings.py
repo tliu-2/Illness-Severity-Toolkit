@@ -163,6 +163,37 @@ def get_mech_vent(mech_vent):
         return 1
 
 
+def get_aa_or_pao2(aa, pao2):
+    """
+    Calculates apache score based on aado2 or pao2 depending on availability.
+    :param aa: aado2 values
+    :param pao2: pao2 values
+    :return: apache score
+    """
+    if math.isnan(aa) and math.isnan(pao2):
+        return math.nan
+    if math.isnan(aa):
+        if pao2 >= 80:
+            return 0
+        elif 70 <= pao2 <= 79:
+            return 2
+        elif 50 <= pao2 <= 69:
+            return 5
+        else:
+            return 15
+    else:
+        if aa < 100:
+            return 0
+        elif 100 <= aa <= 249:
+            return 7
+        elif 250 <= aa <= 349:
+            return 9
+        elif 350 <= aa <= 499:
+            return 11
+        else:  # aa >= 500:
+            return 14
+
+
 def get_aado2(po2, fio2, pco2, isMechVent):
     """
     Assigns an aado2 for patients who are mechanically ventilated and have an fio2 >= 50%. If the patient isn't
@@ -328,7 +359,32 @@ def check_kidney_failure(cr_high, urine_out, esrd):
 # @param AKIStatus is a Panda Series containing booleans of a patients status of AKI / ARF.
 # @return A Panda Series containing scores for patients Creatinine levels.
 
-def get_cr(cr, aki, cr_1=None):
+
+def get_cr(cr, aki):
+    """
+    Assigns an APACHE score for creatinine values and kidney failure.
+    :param cr: Creatinine values
+    :param aki: Acute kidney injury status
+    :return: apache score
+    """
+    if math.isnan(cr):
+        return math.nan
+    if not aki:
+        if cr >= 1.95:
+            return 7
+        elif 1.5 <= cr <= 1.94:
+            return 4
+        elif cr <= 0.4:
+            return 3
+        else:
+            return 0
+    else:
+        if cr >= 1.5:
+            return 10
+        else:
+            return 0
+
+def get_cr2(cr, aki, cr_1=None):
     """
     Assigns an APACHE score for creatinine values and kidney failure.
     :param cr: 24h creatinine values
@@ -641,9 +697,22 @@ def check_cancer(cancer):
         return math.nan
 
 
+def check_immuno_sup(immunosup):
+    """
+    Assigns apache score based on immunocompromised status
+    :param immunosup: immunocompromised status
+    :return: apache score
+    """
+    if math.isnan(immunosup):
+        return math.nan
+    elif immunosup == 1:
+        return 10
+    else:
+        return 0
+
 # This method checks if the patient is immuno-suppressed.
 
-def check_immuno_sup(organtx, sct, prednisone):
+def check_immuno_sup2(organtx, sct, prednisone):
     """
     Assigns an APACHE score based on immunocompromised / suppressed status
     :param organtx: orgran transplant status
