@@ -26,6 +26,8 @@ def run(df):
     sumdf['Cirrhosis'] = df['comorb_cirr'].apply(Settings.check_cirr)
     # TODO Ask about other cancer / metasatic cancer categorization
     sumdf['Cancer'] = df['comorb_cancer'].apply(Settings.check_cancer)
+    sumdf['Leukemia'] = df['comorb_leukemia'].apply(Settings.check_leukemia)
+    sumdf['Lymphoma'] = df['comorb_leukemia'].apply(Settings.check_lymphoma)
 
     # sumdf['organtx'] = df['organtx']
     # sumdf['sct'] = df['sct']
@@ -37,7 +39,7 @@ def run(df):
     # sumdf['HIV / AIDS'] = sumdf.apply(lambda x: Settings.check_hiv_aids(x['hiv'], x['cd4']), axis=1)
     # sumdf = sumdf.drop(columns=['organtx', 'sct', 'hiv', 'cd4', 'prednisone'])
 
-    # TODO Ask if still want to check for HIV
+    sumdf['AIDS'] = df['comorb_aids'].apply(Settings.check_aids)
     sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
 
     temp_high['Heart Rate High'] = df['hr_max_d01'].apply(Settings.get_heart_rate_score)
@@ -80,7 +82,6 @@ def run(df):
     # sumdf['PaO2'] = sumdf['PaO2 High Score'].combine(sumdf['PaO2 Low Score'], max, fill_value=0)
     # sumdf = sumdf.drop(columns=['pO2 High', 'pO2 Low', 'Mech Vent', 'PaO2 High Score', 'PaO2 Low Score'])
 
-    # TODO Ask ask about changing from how its calculated in the paper
     sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']))
 
     sumdf['hct lo 24h'] = df['hct_max_d01']
@@ -149,10 +150,9 @@ def run(df):
     sumdf['Serum Albumin'] = sumdf['alb hi'].combine(sumdf['alb lo'], max, fill_value=0)
     sumdf = sumdf.drop(columns=['alb lo d0', 'alb hi d0', 'alb lo d1', 'alb hi d1', 'alb lo', 'alb hi'])
 
-    # TODO Ask Neha about missing bilirubin
-    sumdf['bil d0'] = df['tbil_d0']
-    sumdf['bil d1'] = df['tbil_d1']
-    sumdf['Serum Bilirubin'] = sumdf.apply(lambda x: Settings.get_bilirubin(x['bil d0'], x['bil d1']), axis=1)
+    sumdf['bil d0'] = df['tbil_max_d01']
+    # sumdf['bil d1'] = df['tbil_d1']
+    sumdf['Serum Bilirubin'] = sumdf.apply(lambda x: Settings.get_bilirubin(x['bil d0']), axis=1)
     sumdf = sumdf.drop(columns=['bil d0', 'bil d1'])
 
     sumdf['lo gluc d0'] = df['gluc_max_d01']
@@ -172,10 +172,12 @@ def run(df):
     sumdf = sumdf.drop(columns=['GCS Visual', 'GCS Motor', 'GCS Verbal'])
 
     sumdf['ph'] = df['ph_min_d01']
-    # TODO Ask for missing pco2 variable.
-    # sumdf['pCO2 Low'] =
-    sumdf['pH and pCO2'] = sumdf.apply(lambda x: Settings.get_ph_pco2(x['ph'], x['pCO2 Low']), axis=1)
-    sumdf = sumdf.drop(columns=['ph', 'pCO2 Low'])
+    sumdf['pCO2 min'] = df['pco2_phmin_d01']
+    sumdf['pCO2 max'] = df['pco2_phmax_d01']
+    sumdf['ph_pco2_min'] = sumdf.apply(lambda x: Settings.get_ph_pco2(x['ph'], x['pCO2 min']), axis=1)
+    sumdf['ph_pco2_max'] = sumdf.apply(lambda x: Settings.get_ph_pco2(x['ph'], x['pCO2 max']), axis=1)
+    sumdf['pH and pCO2'] = sumdf['ph_pco2_max'].combine(sumdf['ph_pco2_min'], max, fill_value=0)
+    sumdf = sumdf.drop(columns=['ph', 'pCO2 min', 'pCO2 max', 'ph_pco2_min', 'ph_pco2_max'])
 
     sumdf['Score'] = sumdf.sum(axis=1)
     sumdf['Study ID'] = df['study_id']

@@ -671,12 +671,12 @@ def check_cirr(cirr):
     :param cirr: cirrhosis status
     :return: APACHE score based on whether a subject has cirrhosis or not.
     """
-    if cirr == 1:
-        return 4
-    elif cirr == 2:
-        return 0
-    else:
+    if math.isnan(cirr):
         return math.nan
+    elif cirr == 1:
+        return 4
+    else:
+        return 0
 
 
 # This method checks if the patient has cancer.
@@ -689,13 +689,28 @@ def check_cancer(cancer):
     """
     # Unable to check for type of cancer, APACHE score will be off +- 3
     # This program will assume the worst meaning if cancer == yes, use score of Lymphoma
-    if cancer == 1:
-        return 13
-    elif cancer == 2:
-        return 0
-    else:
+    if math.isnan(cancer):
         return math.nan
+    elif cancer == 1:
+        return 11
+    else:
+        return 0
 
+def check_leukemia(status):
+    if math.isnan(status):
+        return math.nan
+    elif status == 1:
+        return 10
+    else:
+        return 0
+
+def check_lymphoma(status):
+    if math.isnan(status):
+        return math.nan
+    elif status == 1:
+        return 13
+    else:
+        return 0
 
 def check_immuno_sup(immunosup):
     """
@@ -847,10 +862,10 @@ def gcs_combined(visual, motor, verbal):
                 return math.nan
 
 
-def check_hiv_aids(hiv, cd4):
-    if math.isnan(hiv) or math.isnan(cd4):
+def check_aids(status):
+    if math.isnan(status):
         return math.nan
-    elif hiv == 1 and cd4 == 1:
+    elif status == 1:
         return 23
     else:
         return 0
