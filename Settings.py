@@ -384,6 +384,7 @@ def get_cr(cr, aki):
         else:
             return 0
 
+
 def get_cr2(cr, aki, cr_1=None):
     """
     Assigns an APACHE score for creatinine values and kidney failure.
@@ -665,15 +666,15 @@ def get_age(age):
 
 # This method checks if the patient has cirrhosis.
 
-def check_cirr(cirr):
+def check_cirr(status):
     """
     Assigns an APACHE score for cirrhosis
-    :param cirr: cirrhosis status
+    :param status: cirrhosis status
     :return: APACHE score based on whether a subject has cirrhosis or not.
     """
-    if math.isnan(cirr):
+    if math.isnan(status):
         return math.nan
-    elif cirr == 1:
+    elif status == 1:
         return 4
     else:
         return 0
@@ -681,20 +682,19 @@ def check_cirr(cirr):
 
 # This method checks if the patient has cancer.
 
-def check_cancer(cancer):
+def check_cancer(status):
     """
     Assigns an APACHE score for a given cancer status.
-    :param cancer: cancer status
+    :param status: cancer status
     :return: APACHE score based on whether a subject has cancer.
     """
-    # Unable to check for type of cancer, APACHE score will be off +- 3
-    # This program will assume the worst meaning if cancer == yes, use score of Lymphoma
-    if math.isnan(cancer):
+    if math.isnan(status):
         return math.nan
-    elif cancer == 1:
+    elif status == 1:
         return 11
     else:
         return 0
+
 
 def check_leukemia(status):
     if math.isnan(status):
@@ -704,6 +704,7 @@ def check_leukemia(status):
     else:
         return 0
 
+
 def check_lymphoma(status):
     if math.isnan(status):
         return math.nan
@@ -712,18 +713,20 @@ def check_lymphoma(status):
     else:
         return 0
 
-def check_immuno_sup(immunosup):
+
+def check_immuno_sup(status):
     """
     Assigns apache score based on immunocompromised status
-    :param immunosup: immunocompromised status
+    :param status: immunocompromised status
     :return: apache score
     """
-    if math.isnan(immunosup):
+    if math.isnan(status):
         return math.nan
-    elif immunosup == 1:
+    elif status == 1:
         return 10
     else:
         return 0
+
 
 # This method checks if the patient is immuno-suppressed.
 
@@ -863,6 +866,11 @@ def gcs_combined(visual, motor, verbal):
 
 
 def check_aids(status):
+    """
+    Calculate APACHE score given a binary status code for AIDS
+    :param status: AIDS status of patient
+    :return: APACHE score
+    """
     if math.isnan(status):
         return math.nan
     elif status == 1:
