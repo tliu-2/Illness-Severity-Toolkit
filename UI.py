@@ -4,7 +4,6 @@ from tkinter import filedialog
 from tkinter import ttk
 import pandas as pd
 import Calculator as calc
-import subprocess
 
 global df
 
@@ -17,8 +16,7 @@ def exit_program():
 def getCSV():
     global df
     csvfile = filedialog.askopenfilename(title="Select a CSV File", filetypes=(("csv files", "*.csv"),))
-    csvdf = pd.read_csv(csvfile)
-    df = csvdf
+    df = pd.read_csv(csvfile, delimiter=',', encoding="latin1")
 
 
 def run():

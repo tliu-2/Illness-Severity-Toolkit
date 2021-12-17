@@ -271,30 +271,15 @@ def get_pao2(po2, mech_vent, po2_1=None):
 # This method converts hematocrit measurements into APACHE scores.
 # @param critScore is a panda Series that contains patient values for Hematocrit
 # @return score is a panda Series that contains APACHE values for a corresponding hematocrit level in patients.
-def get_hematocrit(hct, hct_d0=None, hct_d1=None):
+def get_hematocrit(hct):
     """
     Assigns an APACHE score based on hematocrit measurements. Assumes if hct_d0 is missing then hct_d1 is also missing.
     :param hct: 24h hematocrit values
-    :param hct_d0: d0 alternative value if 24h is missing
-    :param hct_d1: d1 alternative value if both d0 and 24h are missing
     :return: APACHE score based on hematocrit measurements
     """
     if math.isnan(hct):
-        if hct_d0 is not None:
-            if math.isnan(hct_d0):
-                if hct_d1 is not None:
-                    if math.isnan(hct_d1):
-                        return math.nan
-                    else:
-                        hct = hct_d1
-                else:
-                    return math.nan
-            else:
-                hct = hct_d0
-        else:
-            return math.nan
-
-    if 41 <= hct <= 49:
+        return math.nan
+    elif 41 <= hct <= 49:
         return 0
     else:
         return 3
@@ -304,7 +289,7 @@ def get_hematocrit(hct, hct_d0=None, hct_d1=None):
 # This method converts white blood cell counts (WBC) into APACHE scores.
 # @param wbcCount is a panda Series containing patient values of white blood cell count.
 # @return score is a panda Series containing APACHE score values for white blood cell counts.
-def get_wbc(wbc, wbc_d0=None, wbc_d1=None):
+def get_wbc(wbc):
     """
     Assigns an APACHE score based on wbc measurements.
     :param wbc: 24h wbc value
@@ -313,21 +298,8 @@ def get_wbc(wbc, wbc_d0=None, wbc_d1=None):
     :return:
     """
     if math.isnan(wbc):
-        if wbc_d0 is not None:
-            if math.isnan(wbc_d0):
-                if wbc_d1 is not None:
-                    if math.isnan(wbc_d1):
-                        return math.nan
-                    else:
-                        wbc = wbc_d1
-                else:
-                    return math.nan
-            else:
-                wbc = wbc_d0
-        else:
-            return math.nan
-
-    if wbc >= 25 or 1.0 <= wbc <= 2.9:
+        return math.nan
+    elif wbc >= 25 or 1.0 <= wbc <= 2.9:
         return 5
     elif 20 <= wbc <= 24.9:
         return 1
@@ -423,7 +395,7 @@ def get_cr2(cr, aki, cr_1=None):
 # BUN: (Blood Urea Nitrogen) mg/dL
 # This method converts BUN levels into APACHE scores.
 
-def get_bun(bun, bun_d1=None):
+def get_bun(bun):
     """
     Assigns an APACHE score for given Blood Urea Nitrogen (BUN) values
     :param bun: 24h bun values
@@ -431,15 +403,8 @@ def get_bun(bun, bun_d1=None):
     :return: APACHE score for given values
     """
     if math.isnan(bun):
-        if bun_d1 is not None:
-            if math.isnan(bun_d1):
-                return math.nan
-            else:
-                bun = bun_d1
-        else:
-            return math.nan
-
-    if bun <= 16.9:
+        return math.nan
+    elif bun <= 16.9:
         return 0
     elif 17 <= bun <= 19:
         return 2
@@ -455,7 +420,7 @@ def get_bun(bun, bun_d1=None):
 # This method converts serum sodium levels into APACHE scores.
 # @param naLevel is a panda Series that patient values for sodium concentration in serum.
 # @return score is a panda Series that contains APACHE score values for corresponding sodium concentrations.
-def get_na(na, na1=None):
+def get_na(na):
     """
     Assigns an APACHE score for given serum sodium values.
     :param na: 24h sodium values
@@ -463,15 +428,8 @@ def get_na(na, na1=None):
     :return: APACHE scores for given values
     """
     if math.isnan(na):
-        if na1 is not None:
-            if math.isnan(na1):
-                return math.nan
-            else:
-                na = na1
-        else:
-            return math.nan
-
-    if na >= 155:
+        return math.nan
+    elif na >= 155:
         return 4
     elif 120 <= na <= 134:
         return 2
@@ -493,15 +451,8 @@ def get_alb(alb, alb_d1=None):
     :return: APACHE score based on the given values.
     """
     if math.isnan(alb):
-        if alb_d1 is not None:
-            if math.isnan(alb_d1):
-                return math.nan
-            else:
-                alb = alb_d1
-        else:
-            return math.nan
-
-    if alb >= 4.5:
+        return math.nan
+    elif alb >= 4.5:
         return 4
     elif 2.0 <= alb <= 2.4:
         return 6
@@ -524,15 +475,8 @@ def get_bilirubin(bili, bili_d1=None):
     :return: APACHE score based on values
     """
     if math.isnan(bili):
-        if bili_d1 is not None:
-            if math.isnan(bili_d1):
-                return math.nan
-            else:
-                bili = bili_d1
-        else:
-            return math.nan
-
-    if bili >= 8.0:
+        return math.nan
+    elif bili >= 8.0:
         return 16
     elif 3.0 <= bili <= 4.9:
         return 6
@@ -555,15 +499,8 @@ def get_glucose(glucose, gluc_d1=None):
     :return: APACHE score based on given values.
     """
     if math.isnan(glucose):
-        if gluc_d1 is not None:
-            if math.isnan(gluc_d1):
-                return math.nan
-            else:
-                glucose = gluc_d1
-        else:
-            return math.nan
-
-    if glucose >= 330:
+        return math.nan
+    elif glucose >= 330:
         return 5
     elif 200 <= glucose <= 349:
         return 3
