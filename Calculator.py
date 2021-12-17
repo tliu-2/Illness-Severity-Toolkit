@@ -56,7 +56,7 @@ def run(df):
 
     sumdf['High RR'] = df['rr_max_d01']
     sumdf['Low RR'] = df['rr_min_d01']
-    sumdf['Mech Vent'] = df['intubated_8am_d0']
+    sumdf['Mech Vent'] = df['highestrespsupport_d01']
 
     sumdf['High RR Score'] = sumdf.apply(lambda x: Settings.get_rr_score(x['High RR'], x['Mech Vent']), axis=1)
     sumdf['Low RR Score'] = sumdf.apply(lambda x: Settings.get_rr_score(x['Low RR'], x['Mech Vent']), axis=1)
