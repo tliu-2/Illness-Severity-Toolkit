@@ -21,20 +21,9 @@ def run(df):
 
     sumdf['Age'] = df['age'].apply(Settings.get_age)
     sumdf['Cirrhosis'] = df['comorb_cirr'].apply(Settings.check_cirr)
-    # TODO Ask about other cancer / metasatic cancer categorization
     sumdf['Cancer'] = df['comorb_cancer'].apply(Settings.check_cancer)
     sumdf['Leukemia'] = df['comorb_leukemia'].apply(Settings.check_leukemia)
     sumdf['Lymphoma'] = df['comorb_leukemia'].apply(Settings.check_lymphoma)
-
-    # sumdf['organtx'] = df['organtx']
-    # sumdf['sct'] = df['sct']
-    # sumdf['hiv'] = df['hiv']
-    # sumdf['cd4'] = df['cd4']
-    # sumdf['prednisone'] = df['prednisone']
-    # sumdf['Immunosuppression'] = sumdf.apply(
-    #     lambda x: Settings.check_immuno_sup(x['organtx'], x['sct'], x['prednisone']), axis=1)
-    # sumdf['HIV / AIDS'] = sumdf.apply(lambda x: Settings.check_hiv_aids(x['hiv'], x['cd4']), axis=1)
-    # sumdf = sumdf.drop(columns=['organtx', 'sct', 'hiv', 'cd4', 'prednisone'])
 
     sumdf['AIDS'] = df['comorb_aids'].apply(Settings.check_aids)
     sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
@@ -63,24 +52,6 @@ def run(df):
     sumdf['RR'] = sumdf['High RR Score'].combine(sumdf['Low RR Score'], max, fill_value=0)
     sumdf = sumdf.drop(columns=['High RR', 'Low RR', 'High RR Score', 'Low RR Score'])
 
-    # sumdf['pO2 High'] = df['hi_po2_24h']
-    # sumdf['pO2 Low'] = df['lo_po2_24h']
-    # sumdf['fiO2 High'] = df['abg_hi_fio2_24h']
-    # sumdf['fiO2 Low'] = df['abg_lo_fio2_24h']
-    # sumdf['pCO2 High'] = df['ph_hi_co2_d0']
-    # sumdf['pCO2 Low'] = df['ph_lo_co2_d0']
-    #
-    # sumdf['AaDO2 High Score'] = sumdf.apply(
-    #     lambda x: Settings.get_aado2(x['pO2 High'], x['fiO2 High'], x['pCO2 High'], x['Mech Vent']), axis=1)
-    # sumdf['AaDO2 Low Score'] = sumdf.apply(
-    #     lambda x: Settings.get_aado2(x['pO2 Low'], x['fiO2 Low'], x['pCO2 Low'], x['Mech Vent']), axis=1)
-    # sumdf['AaDO2'] = sumdf['AaDO2 High Score'].combine(sumdf['AaDO2 Low Score'], max, fill_value=0)
-    # sumdf = sumdf.drop(columns=['AaDO2 High Score', 'AaDO2 Low Score', 'fiO2 High', 'fiO2 Low', 'pCO2 High'])
-    #
-    # sumdf['PaO2 High Score'] = sumdf.apply(lambda x: Settings.get_pao2(x['pO2 High'], x['Mech Vent']), axis=1)
-    # sumdf['PaO2 Low Score'] = sumdf.apply(lambda x: Settings.get_pao2(x['pO2 Low'], x['Mech Vent']), axis=1)
-    # sumdf['PaO2'] = sumdf['PaO2 High Score'].combine(sumdf['PaO2 Low Score'], max, fill_value=0)
-    # sumdf = sumdf.drop(columns=['pO2 High', 'pO2 Low', 'Mech Vent', 'PaO2 High Score', 'PaO2 Low Score'])
 
     sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']), axis=1)
 
@@ -104,6 +75,7 @@ def run(df):
     sumdf['WBC'] = sumdf['wbc hi'].combine(sumdf['wbc lo'], max, fill_value=0)
     sumdf = sumdf.drop(columns=['wbc low 24h', 'wbc high 24h', 'wbc lo', 'wbc hi'])
 
+    # Creatinine score slightly different due to removal of urine
     # sumdf['cr high'] = df['cr_max_d01']
     # sumdf['urine'] = df['aki']
     # sumdf['aki'] = df['esrd']
@@ -113,7 +85,7 @@ def run(df):
 
     sumdf['Creatinine'] = df.apply(lambda x: Settings.get_cr(x['cr_max_d01'], x['aki']), axis=1)
 
-    # Urine pending removal decision
+    # Urine not accounted for in this version
     # sumdf['urine d0'] = df['urine_out_d0']
     # sumdf['urine d1'] = df['urine_out_d1']
     # sumdf['Urine'] = sumdf.apply(lambda x: Settings.get_urine(x['urine d0'], x['urine d1']), axis=1)
