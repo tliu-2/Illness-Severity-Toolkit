@@ -134,7 +134,7 @@ def run(df):
     sumdf['pH and pCO2'] = sumdf['ph_pco2_max'].combine(sumdf['ph_pco2_min'], max, fill_value=0)
     sumdf = sumdf.drop(columns=['ph', 'pCO2 min', 'pCO2 max', 'ph_pco2_min', 'ph_pco2_max'])
 
-    sumdf['Score'] = sumdf.sum(axis=1)
+    sumdf['Score'] = sumdf.sum(axis=1, numeric_only=True)
     sumdf['Study ID'] = df['study_id']
     score = sumdf.pop('Score')
     study_id = sumdf.pop('Study ID')
