@@ -1,6 +1,7 @@
 # This file contains all the necessary values / whatever that are required to calculate APACHE scores.
 import math
-
+import pandas as pd
+import numpy as np
 
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 # These functions are meant to be used in a .apply setting
@@ -326,6 +327,31 @@ def check_kidney_failure(cr_high, urine_out, esrd):
         return False
 
 
+def get_urine(urine):
+    """
+    Assigns an APACHE score for urine out values
+    :param urine: Urine outs
+    :return: apache score
+    """
+    if math.isnan(urine):
+        return math.nan
+    else:
+        if urine >= 4000:
+            return 1
+        elif 1500 <= urine <= 1999:
+            return 4
+        elif 900 <= urine <= 1499:
+            return 5
+        elif 600 <= urine <= 899:
+            return 7
+        elif 400 <= urine <= 599:
+            return 8
+        elif urine <= 399:
+            return 15
+        else: # 2000 <= urine <= 3999
+            return 0
+
+
 # This method specifically calculates the score of patients for the Creatinine category
 # @param crLevel is the corresponding crLevel of the patient from the .csv file.
 # @param AKIStatus is a Panda Series containing booleans of a patients status of AKI / ARF.
@@ -573,9 +599,15 @@ def get_ph_pco2(ph, pco2):
 
 
 # Cormobidities: Cirhosis, Leukemnia, Age, etc.
-# This method convers a patients age into a corresponding score.
-# @param age is a Panda Series containing the age of all patients.
-# @return a Panda Series containing the age in APACHE-unit scores.
+
+def calculate_age_from_dob(dob):
+    now = pd.Timestamp.now()
+    dob = pd.to_datetime(dob, format='%m/%d/%y')
+    dob = dob.where(dob < now, dob - np.timedelta64(100, 'Y'))
+    age = (now - dob)
+    return age
+
+
 
 def get_age(age):
     """
