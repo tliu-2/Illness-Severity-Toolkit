@@ -143,7 +143,7 @@ def get_rr_score(rr, mech_vent, rr_1=None):
         return 6
     elif 12 <= rr <= 13:
         return 7
-    elif (6 <= rr <= 11) & (mech_vent == 4):
+    elif (6 <= rr <= 11) & (mech_vent == 1):
         return 8
     elif rr <= 5:
         return 17
