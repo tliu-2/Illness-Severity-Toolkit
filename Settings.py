@@ -2,6 +2,7 @@
 import math
 import pandas as pd
 import numpy as np
+from datetime import datetime, date
 
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 # These functions are meant to be used in a .apply setting
@@ -601,10 +602,9 @@ def get_ph_pco2(ph, pco2):
 # Cormobidities: Cirhosis, Leukemnia, Age, etc.
 
 def calculate_age_from_dob(dob):
-    now = pd.Timestamp.now()
-    dob = pd.to_datetime(dob, format='%m/%d/%y')
-    dob = dob.where(dob < now, dob - np.timedelta64(100, 'Y'))
-    age = (now - dob)
+    now = date.today()
+    dob = datetime.strptime(dob, "%m/%d/%Y")
+    age = now.year - dob.year - ((now.month, now.day) < (dob.month, dob.day))
     return age
 
 

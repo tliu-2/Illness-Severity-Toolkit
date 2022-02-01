@@ -18,15 +18,15 @@ def exportCSV(df):
 
 def run(df):
     sumdf = pd.DataFrame([])
-    sumdf['Age'] = df['subject_dob']
     sumdf['Age'] = df['subject_dob'].apply(Settings.calculate_age_from_dob)
+    sumdf['Age'] = sumdf['Age'].apply(Settings.get_age)
     sumdf['Cirrhosis'] = df['comorb_charlson_liver_sev'].apply(Settings.check_cirr)
-    sumdf['Cancer'] = df['comorob_charlson_tumor_mets'].apply(Settings.check_cancer)
+    sumdf['Cancer'] = df['comorb_charlson_tumor_mets'].apply(Settings.check_cancer)
     sumdf['Leukemia'] = df['comorb_charlson_leukemia'].apply(Settings.check_leukemia)
-    sumdf['Lymphoma'] = df['comorb__charlson_leukemia'].apply(Settings.check_lymphoma)
+    sumdf['Lymphoma'] = df['comorb_charlson_leukemia'].apply(Settings.check_lymphoma)
 
     sumdf['HIV'] = df['comorb_hiv'].apply(Settings.check_aids)
-    sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
+    #sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
 
     sumdf['Heart Rate High'] = df['vs_hosp24_hr_high'].apply(Settings.get_heart_rate_score)
     sumdf['Heart Rate Low'] = df['vs_hosp24_hr_low'].apply(Settings.get_heart_rate_score)
@@ -50,11 +50,11 @@ def run(df):
     sumdf['High RR Score'] = sumdf.apply(lambda x: Settings.get_rr_score(x['High RR'], x['Mech Vent']), axis=1)
     sumdf['Low RR Score'] = sumdf.apply(lambda x: Settings.get_rr_score(x['Low RR'], x['Mech Vent']), axis=1)
     sumdf['RR'] = sumdf['High RR Score'].combine(sumdf['Low RR Score'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['High RR', 'Low RR', 'High RR Score', 'Low RR Score'])
+    sumdf = sumdf.drop(columns=['High RR', 'Low RR', 'High RR Score', 'Low RR Score', 'Mech Vent'])
 
     # sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']), axis=1)
-    sumdf['PaO2'] = df.apply(lambda x: Settings.get_pao2(x['lap_hosp_24h_pao2_lowest'], x['mv_yn']), axis=1)
-    sumdf['AA'] = df.apply(lambda x: Settings.get_aado2(x['lap_hosp_24h_pao2_lowest'], x['lap_hosp_24h_fio2_low'],
+    sumdf['PaO2'] = df.apply(lambda x: Settings.get_pao2(x['lab_hosp_24h_pao2_lowest'], x['mv_yn']), axis=1)
+    sumdf['AA'] = df.apply(lambda x: Settings.get_aado2(x['lab_hosp_24h_pao2_lowest'], x['lab_hosp_24h_fio2_low'],
                                                         x['lab_hosp_first_paco2'], x['mv_yn']), axis=1)
 
     sumdf['hct lo 24h'] = df['lab_hosp_24h_hct_low']
@@ -128,10 +128,10 @@ def run(df):
     # sumdf['pH and pCO2'] = sumdf['ph_pco2_max'].combine(sumdf['ph_pco2_min'], max, fill_value=0)
     # sumdf = sumdf.drop(columns=['ph', 'pCO2 min', 'pCO2 max', 'ph_pco2_min', 'ph_pco2_max'])
 
-    sumdf['pH and pCO2'] = df.apply(lambda x: Settings.get_ph_pco2(x['lap_hosp_24h_ph_low'], x['lab_hosp_first_paco2']))
+    sumdf['pH and pCO2'] = df.apply(lambda x: Settings.get_ph_pco2(x['lab_hosp_24h_ph_low'], x['lab_hosp_first_paco2']), axis=1)
 
     sumdf['Score'] = sumdf.sum(axis=1, numeric_only=True)
-    sumdf['Study ID'] = df['study_id']
+    sumdf['Study ID'] = df['slicc_subject_id']
     score = sumdf.pop('Score')
     study_id = sumdf.pop('Study ID')
     sumdf.insert(0, 'Score', score)
