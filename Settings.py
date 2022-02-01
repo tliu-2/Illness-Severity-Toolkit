@@ -11,6 +11,19 @@ def get_heart_rate_score(heart_rate, heart_rate_1=None):
     :param heart_rate: 24h heart rate variable
     :param heart_rate_1: alternative heart rate variable used if heart_rate is missing
     :return: APACHE score for given heart rate
+
+    >>> get_heart_rate_score(170)
+    17
+    >>> get_heart_rate_score(math.nan, 102)
+    1
+    >>> get_heart_rate_score(42)
+    5
+    >>> get_heart_rate_score(114)
+    5
+    >>> get_heart_rate_score(math.nan, 116)
+    5
+    >>> get_heart_rate_score(65)
+    0
     """
     if math.isnan(heart_rate):
         if heart_rate_1 is not None:
@@ -45,6 +58,15 @@ def get_bp_score(bp, bp_1=None):
     :param bp: 24h mean arterial blood pressure value
     :param bp_1: alternative variable if 24h variable is missing
     :return: APACHE score for given blood pressure
+
+    >>> get_bp_score(170)
+    10
+    >>> get_bp_score(90)
+    0
+    >>> get_bp_score(math.nan, 62)
+    7
+    >>> get_bp_score(125)
+    7
     """
     if math.isnan(bp):
         if bp_1 is not None:
@@ -80,6 +102,13 @@ def get_temp_score(temp, temp_1=None):
     :param temp: 24h temperature value
     :param temp_1: alternative if 24h variable is missing / null
     :return: APACHE score for given temperature
+
+    >>> get_temp_score(37)
+    0
+    >>> get_temp_score(math.nan, 33.2)
+    16
+    >>> get_temp_score(42)
+    4
     """
     if math.isnan(temp):
         if temp_1 is not None:
@@ -121,6 +150,15 @@ def get_rr_score(rr, mech_vent, rr_1=None):
     :param mech_vent: mechanical ventilation status at 8am
     :param rr_1: alternative if 24h variable is missing / null
     :return: APACHE score for given respiratory rate
+
+    >>> get_rr_score(15, 1)
+    0
+    >>> get_rr_score(15, 0)
+    0
+    >>> get_rr_score(7, 4)
+    8
+    >>> get_rr_score(7, 5)
+    0
     """
     if math.isnan(rr):
         if rr_1 is not None:
@@ -141,7 +179,7 @@ def get_rr_score(rr, mech_vent, rr_1=None):
         return 6
     elif 12 <= rr <= 13:
         return 7
-    elif (6 <= rr <= 11) & (mech_vent == 4):
+    elif (6 <= rr <= 11) & (mech_vent == 4):  # If not invasive mechanically ventilated give score.
         return 8
     elif rr <= 5:
         return 17
