@@ -26,7 +26,7 @@ def run(df):
     sumdf['Lymphoma'] = df['comorb_charlson_leukemia'].apply(Settings.check_lymphoma)
 
     sumdf['HIV'] = df['comorb_hiv'].apply(Settings.check_aids)
-    #sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
+    sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
 
     sumdf['Heart Rate High'] = df['vs_hosp24_hr_high'].apply(Settings.get_heart_rate_score)
     sumdf['Heart Rate Low'] = df['vs_hosp24_hr_low'].apply(Settings.get_heart_rate_score)
