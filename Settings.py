@@ -209,9 +209,9 @@ def get_aado2(po2, fio2, pco2, isMechVent):
     if math.isnan(po2) or math.isnan(fio2) or math.isnan(pco2):
         return math.nan
     # Check if patient is mechanically ventilated and has an fiO2 level >= 0.5
-    elif (isMechVent == 1) & (fio2 >= 0.5):
+    elif (isMechVent == 1) & ((fio2 / 100) >= 0.5):
         # Calculate A - aDO2:
-        a = ((fio2 * 713) - (pco2 / 0.8))
+        a = (((fio2 / 100) * 713) - (pco2 / 0.8))
         gradient_dif = (a - po2)
         return getAaDO2APACHE(gradient_dif)
     else:  # Patient not mechanically ventilated / not have a fiO2 level of at least 0.5
