@@ -1,6 +1,6 @@
 # This file contains all the necessary values / whatever that are required to calculate APACHE scores.
 import math
-
+import datetime
 
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 # These functions are meant to be used in a .apply setting
@@ -614,6 +614,14 @@ def get_ph_pco2(ph, pco2):
 # This method convers a patients age into a corresponding score.
 # @param age is a Panda Series containing the age of all patients.
 # @return a Panda Series containing the age in APACHE-unit scores.
+
+def calculate_age_from_dob(dob):
+    now = datetime.date.today()
+    dob = datetime.strptime(dob, "%m/%d/%Y")
+    age = now.year - dob.year - ((now.month, now.day) < (dob.month, dob.day))
+    return age
+
+
 
 def get_age(age):
     """
