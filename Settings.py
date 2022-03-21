@@ -1,6 +1,14 @@
 # This file contains all the necessary values / whatever that are required to calculate APACHE scores.
 import math
-import datetime
+from datetime import datetime, date
+from tkinter import filedialog
+
+import pandas as pd
+
+
+def export_csv(df):
+    exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
+    df.to_csv(exportfile, index=None, header=True)
 
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 # These functions are meant to be used in a .apply setting
@@ -616,8 +624,10 @@ def get_ph_pco2(ph, pco2):
 # @return a Panda Series containing the age in APACHE-unit scores.
 
 def calculate_age_from_dob(dob):
-    now = datetime.date.today()
-    dob = datetime.strptime(dob, "%m/%d/%Y")
+    if pd.isnull(dob):
+        return math.nan
+    now = date.today()
+    dob = datetime.strptime(dob, "%Y-%m-%d")
     age = now.year - dob.year - ((now.month, now.day) < (dob.month, dob.day))
     return age
 
@@ -860,3 +870,155 @@ def check_aids(status):
         return 23
     else:
         return 0
+
+#-----------------------------------------------------------------------------------------------------------------------
+# CCI Start:
+def cci_get_age_score(age):
+    if math.isnan(age):
+        return math.nan
+    if age >= 80:
+        return 4
+    elif 70 <= age <= 79:
+        return 3
+    elif 60 <= age <= 69:
+        return 2
+    elif 50 <= age <= 59:
+        return 1
+    else: # age < 50
+        return 0
+
+
+def cci_weight1(x):
+    if math.isnan(x):
+        return math.nan
+    if x == 1:
+        return 1
+    else: # x == 0
+        return 0
+
+def cci_weight2(x):
+    if math.isnan(x):
+        return math.nan
+    if x == 1:
+        return 2
+    else:
+        return 0
+
+def cci_weight3(x):
+    if math.isnan(x):
+        return math.nan
+    if x == 1:
+        return 3
+    else:
+        return 0
+
+def cci_weight6(x):
+    if math.isnan(x):
+        return math.nan
+    if x == 1:
+        return 6
+    else:
+        return 0
+
+# ----------------------------------------------------------------------------------------------------------------------
+# SOFA Start:
+def sofa_resp(pao2, fio2, mv):
+    if math.isnan(pao2) or math.isnan(fio2):
+        return math.nan
+    if pao2 == -99 or fio2 == -99:
+        return math.nan
+
+    ratio = (pao2 / fio2) * 100
+    if ratio > 400:
+        return 0
+    elif 301 <= ratio <= 400:
+        return 1
+    elif ratio <= 300:
+        if (101 <= ratio <= 200) and mv == 1:
+            return 3
+        elif ratio <= 100 and mv == 1:
+            return 4
+        elif mv == 0:
+            return 2
+
+
+def sofa_platelets(plts):
+    if math.isnan(plts) or plts == -99:
+        return math.nan
+    if plts > 150:
+        return 0
+    elif 101 <= plts <= 150:
+        return 1
+    elif 51 <= plts <= 100:
+        return 2
+    elif 21 <= plts <= 50:
+        return 3
+    elif plts <= 20:
+        return 4
+
+
+def sofa_bilirubin(bili):
+    if math.isnan(bili) or bili == -99:
+        return math.nan
+    if bili < 1.2:
+        return 0
+    elif 1.2 <= bili <= 1.9:
+        return 1
+    elif 2 <= bili <= 5.9:
+        return 2
+    elif 6 <= bili <= 11.9:
+        return 3
+    elif bili > 12:
+        return 4
+
+
+def sofa_bp(bp, pressors):
+    if math.isnan(bp):
+        return math.nan
+
+    if bp >= 70:
+        return 0
+    else: # bp < 70
+        if math.isnan(pressors):
+            return 1
+        elif pressors == 1:
+            return 2
+        elif pressors == 2:
+            return 3
+        elif pressors == 3:
+            return 4
+
+def sofa_gcs(gcs):
+    if math.isnan(gcs):
+        return math.nan
+    if gcs >= 15:
+        return 0
+    elif 13 <= gcs <= 14:
+        return 1
+    elif 10 <= gcs <= 12:
+        return 2
+    elif 6 <= gcs <= 9:
+        return 3
+    else: # gcs < 6
+        return 4
+
+def sofa_renal(cr, urine):
+    if math.isnan(cr) and math.isnan(urine):
+        return math.nan
+    if cr < 1.2:
+        return 0
+    elif 1.2 <= cr <= 1.9:
+        return 1
+    elif 2 <= cr <= 3.4:
+        return 2
+    else:
+        if math.isnan(cr):
+            if 200 <= urine <= 500:
+                return 3
+            elif urine < 200:
+                return 4
+        else: # creatinine is not nan
+            if 3.5 <= cr <= 4.9:
+                return 3
+            else: # cr > 5
+                return 4

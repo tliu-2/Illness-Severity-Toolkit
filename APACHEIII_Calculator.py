@@ -8,14 +8,6 @@
 import pandas as pd
 import Settings as Settings
 
-from tkinter import filedialog
-
-
-def exportCSV(df):
-    exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
-    df.to_csv(exportfile, index=None, header=True)
-
-
 def run(df):
     sumdf = pd.DataFrame([])
 
@@ -140,6 +132,7 @@ def run(df):
     study_id = sumdf.pop('Study ID')
     sumdf.insert(0, 'Score', score)
     sumdf.insert(0, 'Study_ID', study_id)
-    exportCSV(sumdf)
+
+    Settings.export_csv(sumdf)
     print(sumdf['Score'])
     print(sumdf)

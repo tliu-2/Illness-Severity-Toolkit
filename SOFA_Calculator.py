@@ -1,61 +1,28 @@
 import pandas as pd
-import numpy as np
-import math
+
+import Settings
 
 
-def get_resp(pao2, fio2, intubated):
-    if math.isnan(pao2) or math.isnan(fio2):
-        return math.nan
-    ratio = (pao2 / fio2) * 100
-    if ratio > 400:
-        return 0
-    elif 301 <= ratio <= 400:
-        return 1
-    elif ratio <= 300:
-        if (100 < ratio <= 200) and intubated == 1:
-            return 3
-        elif ratio <= 100 and intubated == 1:
-            return 4
-        elif ratio > 200:
-            return 2
+def run(df):
+    final_df = pd.DataFrame([])
 
+    final_df['Respiratory'] = df.apply(lambda x: Settings.sofa_resp(x['lab_hosp_pao2_l_dly'],
+                                                                    x['lab_hosp_pf_l_dly'],
+                                                                    x['mv_yn']))
+    final_df['Platelets'] = df['lab_hosp_platelet_l_dly'].apply(Settings.sofa_platelets)
+    final_df['Bilirubin'] = df['lab_hosp_bili_h_dly'].apply(Settings.sofa_bilirubin)
+    final_df['Blood Pressure'] = df.apply(lambda x: Settings.sofa_bp(x['vs_hosp_map_l_dly'],
+                                                                     x['tx_hosp_pressor_dose_dly']))
+    final_df['GCS'] = df['vs_hosp_gcs_l_dly'].apply(lambda x: Settings.sofa_gcs)
+    final_df['Renal'] = df.apply(lambda x: Settings.sofa_renal(x['lab_hosp_cr_h_dly'],
+                                                               x['lab_hosp_urine_out_d0']))
 
-def get_platlets(plts):
-    if math.isnan(plts):
-        return math.nan
-    if plts > 150:
-        return 0
-    elif 101 <= plts <= 150:
-        return 1
-    elif 51 <= plts <= 100:
-        return 2
-    elif 21 <= plts <= 50:
-        return 3
-    elif plts <= 20:
-        return 4
+    final_df['SOFA Score'] = final_df.sum(axis=1, numeric_only=True)
+    final_df['Study_ID'] = df['slicc_subject_id']
 
-def get_bilirubin(bili):
-    if math.isnan(bili):
-        return math.nan
-    elif bili < 1.2:
-        return 0
-    elif 1.2 <= bili <= 1.9:
-        return 1
-    elif 2 <= bili <= 5.9:
-        return 2
-    elif 6 <= bili <= 11.9:
-        return 3
-    elif bili > 12:
-        return 4
+    score = final_df.pop('SOFA Score')
+    study_id = final_df.pop('Study_ID')
+    final_df.insert(0, 'SOFA Score', score)
+    final_df.insert(0, 'Study_ID', study_id)
 
-def get_bp(bp, dbamine, dpamine, norepi, epi):
-    if math.isnan(bp):
-        return math.nan
-
-    if math.isnan(dbamine) and math.isnan(dpamine) and math.isnan(norepi) and math.isnan(epi):
-        if bp >= 70:
-            return 0
-        elif bp < 70:
-            return 1
-
-    
+    Settings.export_csv(final_df)
