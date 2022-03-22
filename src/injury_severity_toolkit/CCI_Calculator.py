@@ -3,7 +3,7 @@ import pandas as pd
 import Settings
 
 
-def run(df):
+def run(df, test=False):
     final_df = pd.DataFrame([])
 
     final_df['Temp Age'] = df['subject_dob'].apply(Settings.calculate_age_from_dob)
@@ -37,14 +37,18 @@ def run(df):
     final_df['AIDS'] = df['comorb_hiv'].apply(Settings.cci_weight6)
 
     final_df['CCI w/ Age'] = final_df.sum(axis=1, numeric_only=True)
+    score_age = final_df.pop('CCI w/ Age')
+
     final_df['CCI'] = final_df.iloc[:, 1:].sum(axis=1, numeric_only=True)
     final_df['Study ID'] = df['slicc_subject_id']
 
-    score_age = final_df.pop('CCI w/ Age')
     score = final_df.pop('CCI')
     study_id = final_df.pop('Study ID')
     final_df.insert(0, 'Score w/ Age', score_age)
     final_df.insert(0, 'Score', score)
     final_df.insert(0, 'Study_ID', study_id)
 
-    Settings.export_csv(final_df)
+    if test:
+        final_df.to_csv("./CCI_Test.csv", index=False, header=True)
+    else:
+        Settings.export_csv(final_df)

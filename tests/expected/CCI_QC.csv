@@ -1,0 +1,11 @@
+﻿Study_ID,Score,Score w/ Age,Age,Myocardial Infarction,Congestive Heart Failure,Peripheral Vascular Disease,Cerebrovascular Disease,Dementia,COPD,Connective Tissue Disease,Peptic Ulcer Disease,Mild Liver Disease,Diabetes,Hemiplegia,Mod-Severe Renal Disease,Diabetes w/ Organ Damage,Tumor,Lymphoma,Leukemia,Mod-Severe Liver Disease,Metastatic Tumor,AIDS
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2,4,6,2,1,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0
+3,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0
+5,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6,1,3,2,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+7,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+9,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

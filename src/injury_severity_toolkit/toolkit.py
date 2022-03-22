@@ -21,24 +21,30 @@ def get_csv():
     csvfile = filedialog.askopenfilename(title="Select a CSV File", filetypes=(("csv files", "*.csv"),))
     df = pd.read_csv(csvfile, delimiter=',', encoding="latin1")
 
+
 # Run Wrappers.
 def run_apache():
     apache_Calc.run(df)
 
+
 def run_sofa():
     sofa_Calc.run(df)
+
 
 def run_cci():
     cci_Calc.run(df)
 
+
 def run_vfds():
     VFDs.run(df)
+
 
 def run_button(tab_root, run_type):
     run_button = ttk.Button(tab_root, text='Run', command=run_type)
     run_button.pack()
     import_button = ttk.Button(tab_root, text='Import File', command=get_csv)
     import_button.pack()
+
 
 if __name__ == '__main__':
     root = Tk()

@@ -627,7 +627,7 @@ def calculate_age_from_dob(dob):
     if pd.isnull(dob):
         return math.nan
     now = date.today()
-    dob = datetime.strptime(dob, "%Y-%m-%d")
+    dob = datetime.strptime(dob, "%m/%d/%Y")
     age = now.year - dob.year - ((now.month, now.day) < (dob.month, dob.day))
     return age
 

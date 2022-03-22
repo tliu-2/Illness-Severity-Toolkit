@@ -8,7 +8,8 @@
 import pandas as pd
 import Settings as Settings
 
-def run(df):
+
+def run(df, test=False):
     sumdf = pd.DataFrame([])
 
     sumdf['Age'] = df['age'].apply(Settings.get_age)
@@ -44,9 +45,7 @@ def run(df):
     sumdf['RR'] = sumdf['High RR Score'].combine(sumdf['Low RR Score'], max, fill_value=0)
     sumdf = sumdf.drop(columns=['High RR', 'Low RR', 'High RR Score', 'Low RR Score'])
 
-
     sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']), axis=1)
-
 
     sumdf['hct lo 24h'] = df['hct_max_d01']
     sumdf['hct hi 24h'] = df['hct_min_d01']
@@ -133,6 +132,7 @@ def run(df):
     sumdf.insert(0, 'Score', score)
     sumdf.insert(0, 'Study_ID', study_id)
 
-    Settings.export_csv(sumdf)
-    print(sumdf['Score'])
-    print(sumdf)
+    if test:
+        sumdf.to_csv("./tests/APACHE_Test.csv", index=False, header=True)
+    else:
+        Settings.export_csv(sumdf)

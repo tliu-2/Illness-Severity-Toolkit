@@ -1,0 +1,11 @@
+slicc_subject_id,redcap_repeat_instrument,redcap_repeat_instance,comorb_charlson_mi,comorb_charlson_chf,comorb_charlson_pvd,comorb_charlson_cva_mild,comorb_charlson_dementia,comorb_copd,comorb_charlson_ctd,comorb_charlson_pud,comorb_charlson_liver_mild,comorb_charlson_dm_mild,comorb_charlson_hemiplegia,comorb_charlson_renal_sev,comorb_charlson_dm_severe,comorb_charlson_tumor_no,comorb_charlson_lymphoma,comorb_charlson_leukemia,comorb_charlson_liver_sev,comorb_charlson_tumor_mets,comorb_hiv,elig_aids,subject_dob
+1,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1/8/1980
+2,,,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,6/9/1956
+3,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6/13/1957
+4,,,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,5/13/1993
+5,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7/27/1969
+6,,,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,12/30/1955
+7,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6/26/1965
+8,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2/16/2001
+9,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9/22/1972
+10,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8/27/1948

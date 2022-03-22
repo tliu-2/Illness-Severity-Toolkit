@@ -14,7 +14,8 @@ def calculate_vfds(row):
     else:
         return 0
 
-def run(df):
+
+def run(df, test=False):
     df_t = df.groupby(by='slicc_subject_id', as_index=True, sort=False)
 
     list_vfds = list()
@@ -28,4 +29,7 @@ def run(df):
         list_vfds.append((slicc_id, curr_vfd))
 
     df_final = pd.DataFrame(list_vfds, columns=['slicc_study_id', 'VFDs'])
+
+    if test:
+        df_final.to_csv("VFDs_test.csv", index=False, header=True)
     Settings.export_csv(df_final)
