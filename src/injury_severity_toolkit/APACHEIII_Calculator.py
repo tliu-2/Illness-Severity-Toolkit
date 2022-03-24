@@ -57,24 +57,10 @@ def run(df, test=False):
                             axis=1)
     sumdf['WBC'] = df['wbc hi'].combine(df['wbc lo'], max, fill_value=0)
 
-    # Creatinine score slightly different due to removal of urine
-    # sumdf['cr high'] = df['cr_max_d01']
-    # sumdf['urine'] = df['aki']
-    # sumdf['aki'] = df['esrd']
-    # sumdf['ARF'] = sumdf.apply(lambda x: Settings.check_kidney_failure(x['cr high'], x['urine'], x['esrd']), axis=1)
-    # sumdf['Creatinine'] = sumdf.apply(lambda x: Settings.get_cr(x['cr high'], x['ARF']), axis=1)
-    # sumdf = sumdf.drop(columns=['cr high', 'urine', 'esrd', 'ARF'])
-
     df['ARF'] = df.apply(lambda x: Settings.check_kidney_failure(x['lab_hosp_cr_high'],
                                                                  x['lab_hosp_urine_out_d0'],
                                                                  x['comorb_esrd']), axis=1)
     sumdf['Creatinine'] = df.apply(lambda x: Settings.get_cr(x['lab_hosp_cr_high'], x['ARF']), axis=1)
-
-    # Urine not accounted for in this version
-    # sumdf['urine d0'] = df['urine_out_d0']
-    # sumdf['urine d1'] = df['urine_out_d1']
-    # sumdf['Urine'] = sumdf.apply(lambda x: Settings.get_urine(x['urine d0'], x['urine d1']), axis=1)
-    # sumdf = sumdf.drop(columns=['urine d0', 'urine d1'])
 
     sumdf['Urine'] = df['lab_hosp_urine_out_d0'].apply(Settings.get_urine)
 

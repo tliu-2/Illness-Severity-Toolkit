@@ -6,7 +6,7 @@ import Settings
 def run(df, test=False):
     frames = []
     df_grouped = df.groupby(by='slicc_subject_id', as_index=True, sort=False)
-    for slicc_id, group in df_grouped:
+    for slicc_id, group in df_grouped:  # Divide the df into groups based on subject ID and calculate score.
         temp_df = pd.DataFrame([])
         temp_df['slicc_subject_id'] = group['slicc_subject_id']
         temp_df['date_dly'] = group['date_dly']

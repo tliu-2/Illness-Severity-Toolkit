@@ -34,9 +34,9 @@ def get_heart_rate_score(heart_rate, heart_rate_1=None):
     >>> get_heart_rate_score(65)
     0
     """
-    if math.isnan(heart_rate):
+    if math.isnan(heart_rate) or heart_rate == -99:
         if heart_rate_1 is not None:
-            if math.isnan(heart_rate_1):
+            if math.isnan(heart_rate_1) or heart_rate_1 == -99:
                 return math.nan
             else:
                 heart_rate = heart_rate_1
@@ -77,9 +77,9 @@ def get_bp_score(bp, bp_1=None):
     >>> get_bp_score(125)
     7
     """
-    if math.isnan(bp):
+    if math.isnan(bp) or bp == -99:
         if bp_1 is not None:
-            if math.isnan(bp_1):
+            if math.isnan(bp_1) or bp_1 == -99:
                 return math.nan
             else:
                 bp = bp_1
@@ -119,9 +119,9 @@ def get_temp_score(temp, temp_1=None):
     >>> get_temp_score(42)
     4
     """
-    if math.isnan(temp):
+    if math.isnan(temp) or temp == -99:
         if temp_1 is not None:
-            if math.isnan(temp_1):
+            if math.isnan(temp_1) or temp_1 == -99:
                 return math.nan
             else:
                 temp = temp_1
@@ -169,9 +169,9 @@ def get_rr_score(rr, mech_vent, rr_1=None):
     >>> get_rr_score(7, 5)
     0
     """
-    if math.isnan(rr):
+    if math.isnan(rr) or rr == -99:
         if rr_1 is not None:
-            if math.isnan(rr_1):
+            if math.isnan(rr_1) or rr_1 == -99:
                 return math.nan
             else:
                 rr = rr_1
@@ -253,8 +253,10 @@ def get_aado2(po2, fio2, pco2, mech_vent):
     """
     if math.isnan(po2) or math.isnan(fio2) or math.isnan(pco2):
         return math.nan
+    if po2 == -99 or fio2 == -99 or pco2 == -99:
+        return math.nan
     # Check if patient is mechanically ventilated and has an fiO2 level >= 0.5
-    elif (mech_vent == 1) & (fio2 >= 0.5):
+    if (mech_vent == 1) and (fio2 >= 0.5):
         # Calculate A - aDO2:
         a = ((fio2 * 713) - (pco2 / 0.8))
         gradient_dif = (a - po2)
@@ -324,7 +326,7 @@ def get_hematocrit(hct):
     :param hct: 24h hematocrit values
     :return: APACHE score based on hematocrit measurements
     """
-    if math.isnan(hct):
+    if math.isnan(hct) or hct == -99:
         return math.nan
     elif 41 <= hct <= 49:
         return 0
@@ -344,7 +346,7 @@ def get_wbc(wbc):
     :param wbc_d1: d1 alternative if both 24h and d0 are missing
     :return:
     """
-    if math.isnan(wbc):
+    if math.isnan(wbc) or wbc == -99:
         return math.nan
     elif wbc >= 25 or 1.0 <= wbc <= 2.9:
         return 5
@@ -386,7 +388,7 @@ def get_cr(cr, arf):
     :param aki: Acute kidney injury status
     :return: apache score
     """
-    if math.isnan(cr):
+    if math.isnan(cr) or cr == -99:
         return math.nan
 
     if arf:
@@ -421,7 +423,7 @@ def get_cr(cr, arf):
 
 
 def get_urine(urine):
-    if math.isnan(urine):
+    if math.isnan(urine) or urine == -99:
         return math.nan
     if urine >= 4000:
         return 1
@@ -484,7 +486,7 @@ def get_bun(bun):
     :param bun_d1: alternative bun values if 24h values are missing
     :return: APACHE score for given values
     """
-    if math.isnan(bun):
+    if math.isnan(bun) or bun == -99:
         return math.nan
     elif bun <= 16.9:
         return 0
@@ -509,7 +511,7 @@ def get_na(na):
     :param na1: alternative sodium values if 24h is missing
     :return: APACHE scores for given values
     """
-    if math.isnan(na):
+    if math.isnan(na) or na == -99:
         return math.nan
     elif na >= 155:
         return 4
@@ -532,7 +534,7 @@ def get_alb(alb, alb_d1=None):
     :param alb_d1: alternative albumin values if 24h values are missing
     :return: APACHE score based on the given values.
     """
-    if math.isnan(alb):
+    if math.isnan(alb) or alb == -99:
         return math.nan
     elif alb >= 4.5:
         return 4
@@ -556,7 +558,7 @@ def get_bilirubin(bili, bili_d1=None):
     :param bili_d1: alternative bilirubin values if 24h / d0 are missing
     :return: APACHE score based on values
     """
-    if math.isnan(bili):
+    if math.isnan(bili) or bili == -99:
         return math.nan
     elif bili >= 8.0:
         return 16
@@ -580,7 +582,7 @@ def get_glucose(glucose, gluc_d1=None):
     :param gluc_d1: alternative glucose values if 24h / d0 are missing
     :return: APACHE score based on given values.
     """
-    if math.isnan(glucose):
+    if math.isnan(glucose) or glucose == -99:
         return math.nan
     elif glucose >= 330:
         return 5
@@ -610,6 +612,8 @@ def get_ph_pco2(ph, pco2):
     :return: APACHE score based on given values.
     """
     if math.isnan(ph) or math.isnan(pco2):
+        return math.nan
+    if ph == -99 or pco2 == -99:
         return math.nan
     elif ph < 7.2:
         if pco2 < 50:
@@ -660,6 +664,11 @@ def get_ph_pco2(ph, pco2):
 # @return a Panda Series containing the age in APACHE-unit scores.
 
 def calculate_age_from_dob(dob):
+    """
+    Calculates an age in years from a dob in the format of YYYY-mm-dd. Will add try-except for multiple format support.
+    :param dob: date of birth in YYYY-mm-dd format
+    :return: age in years
+    """
     if pd.isnull(dob):
         return math.nan
     now = date.today()
