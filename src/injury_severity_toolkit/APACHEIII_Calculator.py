@@ -34,8 +34,8 @@ def run(df, test=False):
     df['Low Temp'] = df['vs_hosp24_temp_low_c'].apply(Settings.get_temp_score)
     sumdf['Temperature'] = df['High Temp'].combine(df['Low Temp'], max, fill_value=0)
 
-    df['High RR Score'] = df.apply(lambda x: Settings.get_rr_score(x['High RR'], x['Mech Vent']), axis=1)
-    df['Low RR Score'] = df.apply(lambda x: Settings.get_rr_score(x['Low RR'], x['Mech Vent']), axis=1)
+    df['High RR Score'] = df.apply(lambda x: Settings.get_rr_score(x['vs_hosp24_rr_high'], x['mv_yn']), axis=1)
+    df['Low RR Score'] = df.apply(lambda x: Settings.get_rr_score(x['vs_hosp24_rr_low'], x['mv_yn']), axis=1)
     sumdf['RR'] = df['High RR Score'].combine(df['Low RR Score'], max, fill_value=0)
 
     sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aado2(x['lab_hosp_24h_pao2_lowest'],
@@ -46,15 +46,15 @@ def run(df, test=False):
     # sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']), axis=1)
 
     df['hct lo'] = df.apply(lambda x: Settings.get_hematocrit(x['lab_hosp_24h_hct_low']),
-                               axis=1)
+                            axis=1)
     df['hct hi'] = df.apply(lambda x: Settings.get_hematocrit(x['lab_hosp_24h_hct_high']),
-                               axis=1)
+                            axis=1)
     sumdf['HCT'] = df['hct hi'].combine(df['hct lo'], max, fill_value=0)
 
     df['wbc lo'] = df.apply(lambda x: Settings.get_wbc(x['lab_hosp_24h_wbc_low']),
-                               axis=1)
+                            axis=1)
     df['wbc hi'] = df.apply(lambda x: Settings.get_wbc(x['lab_hosp_24h_wbc_high']),
-                               axis=1)
+                            axis=1)
     sumdf['WBC'] = df['wbc hi'].combine(df['wbc lo'], max, fill_value=0)
 
     # Creatinine score slightly different due to removal of urine
@@ -106,7 +106,7 @@ def run(df, test=False):
                                     axis=1)
 
     sumdf['Score'] = sumdf.sum(axis=1, numeric_only=True)
-    sumdf['Study ID'] = df['study_id']
+    sumdf['Study ID'] = df['slicc_subject_id']
     score = sumdf.pop('Score')
     study_id = sumdf.pop('Study ID')
     sumdf.insert(0, 'Score', score)
