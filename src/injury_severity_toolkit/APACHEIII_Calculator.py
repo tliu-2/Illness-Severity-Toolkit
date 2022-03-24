@@ -11,60 +11,51 @@ import Settings as Settings
 
 def run(df, test=False):
     sumdf = pd.DataFrame([])
+    df['Temp Age'] = df['subject_dob'].apply(Settings.calculate_age_from_dob)
+    sumdf['Age'] = df['Temp Age'].apply(Settings.get_age)
 
-    sumdf['Age'] = df['age'].apply(Settings.get_age)
-    sumdf['Cirrhosis'] = df['comorb_cirr'].apply(Settings.check_cirr)
-    sumdf['Cancer'] = df['comorb_cancer'].apply(Settings.check_cancer)
-    sumdf['Leukemia'] = df['comorb_leukemia'].apply(Settings.check_leukemia)
-    sumdf['Lymphoma'] = df['comorb_leukemia'].apply(Settings.check_lymphoma)
+    sumdf['Cirrhosis'] = df['comorb_charlson_liver_sev'].apply(Settings.check_cirr)
+    sumdf['Cancer'] = df['comorb_charlson_tumor_mets'].apply(Settings.check_cancer)
+    sumdf['Leukemia'] = df['comorb_charlson_leukemia'].apply(Settings.check_leukemia)
+    sumdf['Lymphoma'] = df['comorb_charlson_lymphoma'].apply(Settings.check_lymphoma)
 
-    sumdf['AIDS'] = df['comorb_aids'].apply(Settings.check_aids)
+    sumdf['AIDS'] = df['comorb_hiv'].apply(Settings.check_aids)
     sumdf['Immunocomprimised'] = df['comorb_immunocomp'].apply(Settings.check_immuno_sup)
 
-    sumdf['Heart Rate High'] = df['hr_max_d01'].apply(Settings.get_heart_rate_score)
-    sumdf['Heart Rate Low'] = df['hr_min_d01'].apply(Settings.get_heart_rate_score)
-    sumdf['Heart Rate'] = sumdf['Heart Rate High'].combine(sumdf['Heart Rate Low'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['Heart Rate High', 'Heart Rate Low'])
+    df['Heart Rate High'] = df['vs_hosp24_hr_high'].apply(Settings.get_heart_rate_score)
+    df['Heart Rate Low'] = df['vs_hosp24_hr_low'].apply(Settings.get_heart_rate_score)
+    sumdf['Heart Rate'] = df['Heart Rate High'].combine(df['Heart Rate Low'], max, fill_value=0)
 
-    sumdf['High BP'] = df['map_max_d01'].apply(Settings.get_bp_score)
-    sumdf['Low BP'] = df['map_min_d01'].apply(Settings.get_bp_score)
-    sumdf['Blood Pressure'] = sumdf['High BP'].combine(sumdf['Low BP'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['High BP', 'Low BP'])
+    df['High BP'] = df['vs_hosp24_map_high'].apply(Settings.get_bp_score)
+    df['Low BP'] = df['vs_hosp24_map_low'].apply(Settings.get_bp_score)
+    sumdf['Blood Pressure'] = df['High BP'].combine(df['Low BP'], max, fill_value=0)
 
-    sumdf['High Temp'] = df['temp_max_d01'].apply(Settings.get_temp_score)
-    sumdf['Low Temp'] = df['temp_min_d01'].apply(Settings.get_temp_score)
-    sumdf['Temperature'] = sumdf['High Temp'].combine(sumdf['Low Temp'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['High Temp', 'Low Temp'])
+    df['High Temp'] = df['vs_hosp24_temp_high_c'].apply(Settings.get_temp_score)
+    df['Low Temp'] = df['vs_hosp24_temp_low_c'].apply(Settings.get_temp_score)
+    sumdf['Temperature'] = df['High Temp'].combine(df['Low Temp'], max, fill_value=0)
 
-    sumdf['High RR'] = df['rr_max_d01']
-    sumdf['Low RR'] = df['rr_min_d01']
-    sumdf['Mech Vent'] = df['highestrespsupport_d01']
+    df['High RR Score'] = df.apply(lambda x: Settings.get_rr_score(x['High RR'], x['Mech Vent']), axis=1)
+    df['Low RR Score'] = df.apply(lambda x: Settings.get_rr_score(x['Low RR'], x['Mech Vent']), axis=1)
+    sumdf['RR'] = df['High RR Score'].combine(df['Low RR Score'], max, fill_value=0)
 
-    sumdf['High RR Score'] = sumdf.apply(lambda x: Settings.get_rr_score(x['High RR'], x['Mech Vent']), axis=1)
-    sumdf['Low RR Score'] = sumdf.apply(lambda x: Settings.get_rr_score(x['Low RR'], x['Mech Vent']), axis=1)
-    sumdf['RR'] = sumdf['High RR Score'].combine(sumdf['Low RR Score'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['High RR', 'Low RR', 'High RR Score', 'Low RR Score'])
+    sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aado2(x['lab_hosp_24h_pao2_lowest'],
+                                                               x['lab_hosp_24h_fio2_low'],
+                                                               x['lab_hosp_first_paco2'],
+                                                               x['mv_yn']), axis=1)
 
-    sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']), axis=1)
+    # sumdf['AA / PaO2'] = df.apply(lambda x: Settings.get_aa_or_pao2(x['aa_max_d01'], x['pao2_min']), axis=1)
 
-    sumdf['hct lo 24h'] = df['hct_max_d01']
-    sumdf['hct hi 24h'] = df['hct_min_d01']
-    sumdf['hct lo'] = sumdf.apply(lambda x: Settings.get_hematocrit(x['hct lo 24h']),
-                                  axis=1)
-    sumdf['hct hi'] = sumdf.apply(lambda x: Settings.get_hematocrit(x['hct hi 24h']),
-                                  axis=1)
-    sumdf['HCT'] = sumdf['hct hi'].combine(sumdf['hct lo'], max, fill_value=0)
-    sumdf = sumdf.drop(
-        columns=['hct lo 24h', 'hct hi 24h', 'hct lo', 'hct hi'])
+    df['hct lo'] = df.apply(lambda x: Settings.get_hematocrit(x['lab_hosp_24h_hct_low']),
+                               axis=1)
+    df['hct hi'] = df.apply(lambda x: Settings.get_hematocrit(x['lab_hosp_24h_hct_high']),
+                               axis=1)
+    sumdf['HCT'] = df['hct hi'].combine(df['hct lo'], max, fill_value=0)
 
-    sumdf['wbc low 24h'] = df['wbc_max_d01']
-    sumdf['wbc high 24h'] = df['wbc_min_d01']
-    sumdf['wbc lo'] = sumdf.apply(lambda x: Settings.get_wbc(x['wbc low 24h']),
-                                  axis=1)
-    sumdf['wbc hi'] = sumdf.apply(lambda x: Settings.get_wbc(x['wbc high 24h']),
-                                  axis=1)
-    sumdf['WBC'] = sumdf['wbc hi'].combine(sumdf['wbc lo'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['wbc low 24h', 'wbc high 24h', 'wbc lo', 'wbc hi'])
+    df['wbc lo'] = df.apply(lambda x: Settings.get_wbc(x['lab_hosp_24h_wbc_low']),
+                               axis=1)
+    df['wbc hi'] = df.apply(lambda x: Settings.get_wbc(x['lab_hosp_24h_wbc_high']),
+                               axis=1)
+    sumdf['WBC'] = df['wbc hi'].combine(df['wbc lo'], max, fill_value=0)
 
     # Creatinine score slightly different due to removal of urine
     # sumdf['cr high'] = df['cr_max_d01']
@@ -74,7 +65,10 @@ def run(df, test=False):
     # sumdf['Creatinine'] = sumdf.apply(lambda x: Settings.get_cr(x['cr high'], x['ARF']), axis=1)
     # sumdf = sumdf.drop(columns=['cr high', 'urine', 'esrd', 'ARF'])
 
-    sumdf['Creatinine'] = df.apply(lambda x: Settings.get_cr(x['cr_max_d01'], x['aki']), axis=1)
+    df['ARF'] = df.apply(lambda x: Settings.check_kidney_failure(x['lab_hosp_cr_high'],
+                                                                 x['lab_hosp_urine_out_d0'],
+                                                                 x['comorb_esrd']), axis=1)
+    sumdf['Creatinine'] = df.apply(lambda x: Settings.get_cr(x['lab_hosp_cr_high'], x['ARF']), axis=1)
 
     # Urine not accounted for in this version
     # sumdf['urine d0'] = df['urine_out_d0']
@@ -82,48 +76,34 @@ def run(df, test=False):
     # sumdf['Urine'] = sumdf.apply(lambda x: Settings.get_urine(x['urine d0'], x['urine d1']), axis=1)
     # sumdf = sumdf.drop(columns=['urine d0', 'urine d1'])
 
-    sumdf['lo urea d0'] = df['urea_max_d01']
-    sumdf['hi urea d0'] = df['urea_min_d01']
-    sumdf['urea lo'] = sumdf.apply(lambda x: Settings.get_bun(x['lo urea d0']), axis=1)
-    sumdf['urea hi'] = sumdf.apply(lambda x: Settings.get_bun(x['hi urea d0']), axis=1)
-    sumdf['BUN'] = sumdf['urea hi'].combine(sumdf['urea lo'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['lo urea d0', 'hi urea d0', 'urea lo', 'urea hi'])
+    sumdf['Urine'] = df['lab_hosp_urine_out_d0'].apply(Settings.get_urine)
 
-    sumdf['High Na'] = df['na_max_d01'].apply(Settings.get_na)
-    sumdf['Low Na'] = df['na_min_d01'].apply(Settings.get_na)
-    sumdf['Serum Sodium'] = sumdf['High Na'].combine(sumdf['Low Na'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['High Na', 'Low Na'])
+    df['urea lo'] = df.apply(lambda x: Settings.get_bun(x['lab_hosp_bun_low']), axis=1)
+    df['urea hi'] = df.apply(lambda x: Settings.get_bun(x['lab_hosp_bun_high']), axis=1)
+    sumdf['BUN'] = df['urea hi'].combine(df['urea lo'], max, fill_value=0)
 
-    sumdf['alb lo d0'] = df['alb_max_d01']
-    sumdf['alb hi d0'] = df['alb_min_d01']
-    sumdf['alb lo'] = sumdf.apply(lambda x: Settings.get_alb(x['alb lo d0']), axis=1)
-    sumdf['alb hi'] = sumdf.apply(lambda x: Settings.get_alb(x['alb hi d0']), axis=1)
-    sumdf['Serum Albumin'] = sumdf['alb hi'].combine(sumdf['alb lo'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['alb lo d0', 'alb hi d0', 'alb lo', 'alb hi'])
+    df['High Na'] = df['lab_hosp_24h_na_high'].apply(Settings.get_na)
+    df['Low Na'] = df['lab_hosp_24h_na_low'].apply(Settings.get_na)
+    sumdf['Serum Sodium'] = df['High Na'].combine(df['Low Na'], max, fill_value=0)
 
-    sumdf['Serum Bilirubin'] = df.apply(lambda x: Settings.get_bilirubin(x['tbili_max_d01']), axis=1)
+    df['alb lo'] = df.apply(lambda x: Settings.get_alb(x['lab_hosp_alb_low']), axis=1)
+    df['alb hi'] = df.apply(lambda x: Settings.get_alb(x['lab_hosp_alb_high']), axis=1)
+    sumdf['Serum Albumin'] = df['alb hi'].combine(df['alb lo'], max, fill_value=0)
 
-    sumdf['lo gluc d0'] = df['gluc_max_d01']
-    sumdf['hi gluc d0'] = df['gluc_min_d01']
-    sumdf['gluc lo'] = sumdf.apply(lambda x: Settings.get_glucose(x['lo gluc d0']), axis=1)
-    sumdf['gluc hi'] = sumdf.apply(lambda x: Settings.get_glucose(x['hi gluc d0']), axis=1)
-    sumdf['Serum Glucose'] = sumdf['gluc hi'].combine(sumdf['gluc lo'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['lo gluc d0', 'hi gluc d0', 'gluc lo', 'gluc hi'])
+    sumdf['Serum Bilirubin'] = df.apply(lambda x: Settings.get_bilirubin(x['lab_hosp_first_bili']), axis=1)
 
-    sumdf['GCS Visual'] = df['lo_gcs_visual_d01'].apply(Settings.gcs_visual)
-    sumdf['GCS Motor'] = df['lo_gcs_motor_d01'].apply(Settings.gcs_motor)
-    sumdf['GCS Verbal'] = df['lo_gcs_verbal_d01'].apply(Settings.gcs_verbal)
-    sumdf['GCS Coma'] = sumdf.apply(lambda x: Settings.gcs_combined(x['GCS Visual'], x['GCS Motor'], x['GCS Verbal']),
+    df['gluc lo'] = df.apply(lambda x: Settings.get_glucose(x['lab_hosp_gluc_low']), axis=1)
+    df['gluc hi'] = df.apply(lambda x: Settings.get_glucose(x['lab_hosp_gluc_high']), axis=1)
+    sumdf['Serum Glucose'] = df['gluc hi'].combine(df['gluc lo'], max, fill_value=0)
+
+    df['GCS Visual'] = df['vs_hosp24_gcs_low_eye'].apply(Settings.gcs_visual)
+    df['GCS Motor'] = df['vs_hosp24_gcs_low_motor'].apply(Settings.gcs_motor)
+    df['GCS Verbal'] = df['vs_hosp24_gcs_low_speech'].apply(Settings.gcs_verbal)
+    sumdf['GCS Coma'] = df.apply(lambda x: Settings.gcs_combined(x['GCS Visual'], x['GCS Motor'], x['GCS Verbal']),
+                                 axis=1)
+
+    sumdf['pH and pCO2'] = df.apply(lambda x: Settings.get_ph_pco2(x['lab_hosp_24h_ph_low'], x['lab_hosp_first_paco2']),
                                     axis=1)
-    sumdf = sumdf.drop(columns=['GCS Visual', 'GCS Motor', 'GCS Verbal'])
-
-    sumdf['ph'] = df['ph_min_d01']
-    sumdf['pCO2 min'] = df['pco2_phmin_d01']
-    sumdf['pCO2 max'] = df['pco2_phmax_d01']
-    sumdf['ph_pco2_min'] = sumdf.apply(lambda x: Settings.get_ph_pco2(x['ph'], x['pCO2 min']), axis=1)
-    sumdf['ph_pco2_max'] = sumdf.apply(lambda x: Settings.get_ph_pco2(x['ph'], x['pCO2 max']), axis=1)
-    sumdf['pH and pCO2'] = sumdf['ph_pco2_max'].combine(sumdf['ph_pco2_min'], max, fill_value=0)
-    sumdf = sumdf.drop(columns=['ph', 'pCO2 min', 'pCO2 max', 'ph_pco2_min', 'ph_pco2_max'])
 
     sumdf['Score'] = sumdf.sum(axis=1, numeric_only=True)
     sumdf['Study ID'] = df['study_id']

@@ -241,7 +241,7 @@ def get_aa_or_pao2(aa, pao2):
             return 14
 
 
-def get_aado2(po2, fio2, pco2, isMechVent):
+def get_aado2(po2, fio2, pco2, mech_vent):
     """
     Assigns an aado2 for patients who are mechanically ventilated and have an fio2 >= 50%. If the patient isn't
     mechanically ventilated return 0 and use po2 APACHE score instead.
@@ -254,19 +254,19 @@ def get_aado2(po2, fio2, pco2, isMechVent):
     if math.isnan(po2) or math.isnan(fio2) or math.isnan(pco2):
         return math.nan
     # Check if patient is mechanically ventilated and has an fiO2 level >= 0.5
-    elif (isMechVent == 1) & (fio2 / 100 >= 0.5):
+    elif (mech_vent == 1) & (fio2 >= 0.5):
         # Calculate A - aDO2:
-        a = (((fio2 / 100) * 713) - (pco2 / 0.8))
+        a = ((fio2 * 713) - (pco2 / 0.8))
         gradient_dif = (a - po2)
-        return getAaDO2APACHE(gradient_dif)
+        return get_aa_score(gradient_dif)
     else:  # Patient not mechanically ventilated / not have a fiO2 level of at least 0.5
-        return 0
+        return get_pao2(po2, mech_vent)
 
 
 # This method is solely used when a patient is mechanically ventilated and has a fiO2 <= 0.5
 # @param score is a panda Series containing the calculated AaDO2 value.
 # @return APACHE values for a calculated value.
-def getAaDO2APACHE(score):
+def get_aa_score(score):
     """
     Helper to the aado2 function - actually Assigns the APACHE score based on an aado2 value.
     :param score: calculated aado2 value
@@ -379,7 +379,7 @@ def check_kidney_failure(cr_high, urine_out, esrd):
 # @return A Panda Series containing scores for patients Creatinine levels.
 
 
-def get_cr(cr, aki):
+def get_cr(cr, arf):
     """
     Assigns an APACHE score for creatinine values and kidney failure.
     :param cr: Creatinine values
@@ -388,7 +388,13 @@ def get_cr(cr, aki):
     """
     if math.isnan(cr):
         return math.nan
-    if not aki:
+
+    if arf:
+        if cr >= 1.5:
+            return 10
+        else:
+            return 0
+    else:  # ARF == false
         if cr >= 1.95:
             return 7
         elif 1.5 <= cr <= 1.94:
@@ -397,11 +403,40 @@ def get_cr(cr, aki):
             return 3
         else:
             return 0
-    else:
-        if cr >= 1.5:
-            return 10
-        else:
-            return 0
+
+    # if not arf:  # If subject does not have ARF
+    #     if cr >= 1.95:
+    #         return 7
+    #     elif 1.5 <= cr <= 1.94:
+    #         return 4
+    #     elif cr <= 0.4:
+    #         return 3
+    #     else:
+    #         return 0
+    # else:  # Subject has arf
+    #     if cr >= 1.5:
+    #         return 10
+    #     else:
+    #         return 0
+
+
+def get_urine(urine):
+    if math.isnan(urine):
+        return math.nan
+    if urine >= 4000:
+        return 1
+    elif 2000 <= urine <= 3999:
+        return 0
+    elif 1500 <= urine <= 1999:
+        return 4
+    elif 900 <= urine <= 1499:
+        return 5
+    elif 600 <= urine <= 899:
+        return 7
+    elif 400 <= urine <= 599:
+        return 8
+    elif urine <= 399:
+        return 15
 
 
 def get_cr2(cr, aki, cr_1=None):
