@@ -32,4 +32,5 @@ def run(df, test=False):
 
     if test:
         df_final.to_csv("VFDs_test.csv", index=False, header=True)
-    Settings.export_csv(df_final)
+    else:
+        Settings.export_csv(df_final)

@@ -49,6 +49,6 @@ def run(df, test=False):
     final_df.insert(0, 'Study_ID', study_id)
 
     if test:
-        final_df.to_csv("./CCI_Test.csv", index=False, header=True)
+        final_df.to_csv("./CCI_test.csv", index=False, header=True)
     else:
         Settings.export_csv(final_df)

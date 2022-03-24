@@ -10,6 +10,7 @@ def export_csv(df):
     exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
     df.to_csv(exportfile, index=None, header=True)
 
+
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 # These functions are meant to be used in a .apply setting
 
@@ -627,10 +628,9 @@ def calculate_age_from_dob(dob):
     if pd.isnull(dob):
         return math.nan
     now = date.today()
-    dob = datetime.strptime(dob, "%m/%d/%Y")
+    dob = datetime.strptime(dob, "%Y-%m-%d")
     age = now.year - dob.year - ((now.month, now.day) < (dob.month, dob.day))
     return age
-
 
 
 def get_age(age):
@@ -871,7 +871,8 @@ def check_aids(status):
     else:
         return 0
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------------------------------
 # CCI Start:
 def cci_get_age_score(age):
     if math.isnan(age):
@@ -884,7 +885,7 @@ def cci_get_age_score(age):
         return 2
     elif 50 <= age <= 59:
         return 1
-    else: # age < 50
+    else:  # age < 50
         return 0
 
 
@@ -893,8 +894,9 @@ def cci_weight1(x):
         return math.nan
     if x == 1:
         return 1
-    else: # x == 0
+    else:  # x == 0
         return 0
+
 
 def cci_weight2(x):
     if math.isnan(x):
@@ -904,6 +906,7 @@ def cci_weight2(x):
     else:
         return 0
 
+
 def cci_weight3(x):
     if math.isnan(x):
         return math.nan
@@ -911,6 +914,7 @@ def cci_weight3(x):
         return 3
     else:
         return 0
+
 
 def cci_weight6(x):
     if math.isnan(x):
@@ -920,6 +924,7 @@ def cci_weight6(x):
     else:
         return 0
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 # SOFA Start:
 def sofa_resp(pao2, fio2, mv):
@@ -928,7 +933,7 @@ def sofa_resp(pao2, fio2, mv):
     if pao2 == -99 or fio2 == -99:
         return math.nan
 
-    ratio = (pao2 / fio2) * 100
+    ratio = (pao2 / fio2)
     if ratio > 400:
         return 0
     elif 301 <= ratio <= 400:
@@ -938,7 +943,7 @@ def sofa_resp(pao2, fio2, mv):
             return 3
         elif ratio <= 100 and mv == 1:
             return 4
-        elif mv == 0:
+        elif mv == 0 or ratio > 200:
             return 2
 
 
@@ -958,7 +963,7 @@ def sofa_platelets(plts):
 
 
 def sofa_bilirubin(bili):
-    if math.isnan(bili) or bili == -99:
+    if math.isnan(bili) or bili == -99 or bili == -99.9:
         return math.nan
     if bili < 1.2:
         return 0
@@ -968,7 +973,7 @@ def sofa_bilirubin(bili):
         return 2
     elif 6 <= bili <= 11.9:
         return 3
-    elif bili > 12:
+    elif bili >= 12:
         return 4
 
 
@@ -976,9 +981,9 @@ def sofa_bp(bp, pressors):
     if math.isnan(bp):
         return math.nan
 
-    if bp >= 70:
+    if bp >= 70 and math.isnan(pressors):
         return 0
-    else: # bp < 70
+    else:  # bp < 70
         if math.isnan(pressors):
             return 1
         elif pressors == 1:
@@ -988,8 +993,9 @@ def sofa_bp(bp, pressors):
         elif pressors == 3:
             return 4
 
+
 def sofa_gcs(gcs):
-    if math.isnan(gcs):
+    if math.isnan(gcs) or gcs == -99:
         return math.nan
     if gcs >= 15:
         return 0
@@ -999,8 +1005,9 @@ def sofa_gcs(gcs):
         return 2
     elif 6 <= gcs <= 9:
         return 3
-    else: # gcs < 6
+    else:  # gcs < 6
         return 4
+
 
 def sofa_renal(cr, urine):
     if math.isnan(cr) and math.isnan(urine):
@@ -1017,8 +1024,8 @@ def sofa_renal(cr, urine):
                 return 3
             elif urine < 200:
                 return 4
-        else: # creatinine is not nan
+        else:  # creatinine is not nan
             if 3.5 <= cr <= 4.9:
                 return 3
-            else: # cr > 5
+            else:  # cr > 5
                 return 4
