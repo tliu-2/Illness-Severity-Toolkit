@@ -30,3 +30,10 @@ class TestToolkit(unittest.TestCase):
         results = pd.read_csv("VFDs_test.csv")
         assert_frame_equal(qc, results)
         os.unlink("VFDs_test.csv")
+
+    def test_APACHE(self):
+        qc = pd.read_csv("expected/APACHE_QC.csv")
+        APACHEIII_Calculator.run(pd.read_csv("./test_src/APACHE_test_src.csv"), True)
+        results = pd.read_csv("APACHE_test.csv")
+        assert_frame_equal(qc, results)
+        os.unlink("APACHE_test.csv")
