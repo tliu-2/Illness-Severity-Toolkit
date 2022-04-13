@@ -35,5 +35,5 @@ class TestToolkit(unittest.TestCase):
         qc = pd.read_csv("expected/APACHE_QC.csv")
         APACHEIII_Calculator.run(pd.read_csv("./test_src/APACHE_test_src.csv"), True)
         results = pd.read_csv("APACHE_test.csv")
-        assert_frame_equal(qc, results)
+        assert_frame_equal(qc, results, check_dtype=False)
         os.unlink("APACHE_test.csv")

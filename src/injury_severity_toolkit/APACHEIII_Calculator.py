@@ -99,6 +99,6 @@ def run(df, test=False):
     sumdf.insert(0, 'Study_ID', study_id)
 
     if test:
-        sumdf.to_csv("./tests/APACHE_Test.csv", index=False, header=True)
+        sumdf.to_csv("./APACHE_Test.csv", index=False, header=True)
     else:
         Settings.export_csv(sumdf)
