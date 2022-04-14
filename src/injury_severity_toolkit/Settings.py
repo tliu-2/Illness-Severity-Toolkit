@@ -11,6 +11,10 @@ def export_csv(df):
     df.to_csv(exportfile, index=None, header=True)
 
 
+def sofa_export_csv(df):
+    exportfile = filedialog.asksaveasfilename(defaultextension='.csv')
+    df.to_csv(exportfile, index=True, header=True)
+
 # Contains all the functions / methods/ defs that calculate the APACHE scores for each category.
 # These functions are meant to be used in a .apply setting
 

@@ -18,7 +18,7 @@ class TestToolkit(unittest.TestCase):
         os.unlink("CCI_test.csv")
 
     def test_sofa(self):
-        qc = pd.read_csv("expected/SOFA_QC.csv")
+        qc = pd.read_csv("expected/SOFA_QC_new.csv")
         SOFA_Calculator.run(pd.read_csv("./test_src/SOFA_test_src_final.csv"), True)
         results = pd.read_csv("SOFA_test.csv")
         assert_frame_equal(qc, results, check_dtype=False)
