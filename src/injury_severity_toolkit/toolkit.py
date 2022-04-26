@@ -7,6 +7,7 @@ import APACHEIII_Calculator as apache_Calc
 import SOFA_Calculator as sofa_Calc
 import CCI_Calculator as cci_Calc
 import VFDs
+import oxygenation
 
 global df
 
@@ -39,6 +40,10 @@ def run_vfds():
     VFDs.run(df)
 
 
+def run_oi():
+    oxygenation.run(df)
+
+
 def run_button(tab_root, run_type):
     run_button = ttk.Button(tab_root, text='Run', command=run_type)
     run_button.pack()
@@ -55,17 +60,20 @@ if __name__ == '__main__':
     sofa = ttk.Frame(tabControl)
     cci = ttk.Frame(tabControl)
     vfds = ttk.Frame(tabControl)
+    oi = ttk.Frame(tabControl)
 
     tabControl.add(apache, text='APACHE')
     tabControl.add(sofa, text='SOFA')
     tabControl.add(cci, text='CCI')
     tabControl.add(vfds, text="VFDs")
+    tabControl.add(oi, text="Oxygenation Index")
     tabControl.pack(expand=1, fill="both")
 
     run_button(apache, run_apache)
     run_button(sofa, run_sofa)
     run_button(cci, run_cci)
     run_button(vfds, run_vfds)
+    run_button(oi, run_oi)
     # setitles = Button(root, text='Set Titles', command=retrieve_inputs)
 
     btn = Button(root, text='Quit', command=exit_program)

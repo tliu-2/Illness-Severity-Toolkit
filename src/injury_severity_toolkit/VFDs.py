@@ -18,7 +18,7 @@ def calculate_vfds(row):
 def run(df, test=False):
     df_t = df.groupby(by='slicc_subject_id', as_index=True, sort=False)
 
-    list_vfds = list()
+    list_vfds = []
     for slicc_id, group in df_t:
         curr_vfd = 0
         if 0 in group['dispo'].values:
