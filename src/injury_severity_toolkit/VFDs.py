@@ -28,9 +28,9 @@ def run(df, test=False):
         curr_vfd = vent1 + vent2
         list_vfds.append((slicc_id, curr_vfd))
 
-    df_final = pd.DataFrame(list_vfds, columns=['slicc_study_id', 'VFDs'])
+    final_df = pd.DataFrame(list_vfds, columns=['slicc_study_id', 'VFDs'])
 
     if test:
-        df_final.to_csv("VFDs_test.csv", index=False, header=True)
+        final_df.to_csv("VFDs_test.csv", index=False, header=True)
     else:
-        Settings.export_csv(df_final)
+        return final_df

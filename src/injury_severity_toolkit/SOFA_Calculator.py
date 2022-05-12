@@ -66,4 +66,4 @@ def run(df, test=False):
     if test:
         to_export.to_csv("./SOFA_test.csv", index=True, header=True)
     else:
-        Settings.sofa_export_csv(to_export)
+        return to_export

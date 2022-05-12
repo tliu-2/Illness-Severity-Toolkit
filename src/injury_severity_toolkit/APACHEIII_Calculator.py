@@ -101,4 +101,4 @@ def run(df, test=False):
     if test:
         sumdf.to_csv("./APACHE_Test.csv", index=False, header=True)
     else:
-        Settings.export_csv(sumdf)
+        return sumdf

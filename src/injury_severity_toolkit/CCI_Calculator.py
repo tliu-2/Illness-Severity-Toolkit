@@ -51,4 +51,4 @@ def run(df, test=False):
     if test:
         final_df.to_csv("./CCI_test.csv", index=False, header=True)
     else:
-        Settings.export_csv(final_df)
+        return final_df
