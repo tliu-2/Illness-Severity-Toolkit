@@ -5,8 +5,8 @@ import CCI_Calculator as cci_Calc
 import VFDs
 import oxygenation
 import sys
-from PyQt5.QtWidgets import QComboBox, QPushButton, QApplication, QDesktopWidget, QFileDialog, QMainWindow
 from PyQt5.Qt import *
+from PyQt5 import QtCore
 from pathlib import Path
 
 
@@ -44,10 +44,19 @@ class Toolkit(QMainWindow):
         tabs = QTabWidget()
         tabs.addTab(self.methods_tab(), 'Methods')
         tabs.addTab(self.mapping_tab(), 'Mapping')
+        tabs.addTab(self.results_preview(), 'Results Preview')
         layout.addWidget(tabs)
 
         # Add layout to main window
         self.hbox.addLayout(layout)
+
+        # Run button
+        self.run_btn = QPushButton('Run')
+        self.run_btn.clicked.connect(self.run)
+        self.run_btn.clicked.connect(self.export_csv)
+        self.run_btn.clicked.connect(self.update_results_tab)
+        self.run_btn.setDisabled(True)
+        self.hbox.addWidget(self.run_btn)
 
     def methods_tab(self):
         """Create the General page UI."""
@@ -55,7 +64,6 @@ class Toolkit(QMainWindow):
         layout = QVBoxLayout()
 
         self.method_dropdown = QComboBox(self)
-        self.method_dropdown.move(100, 0)
         self.method_dropdown.addItem('APACHE')
         self.method_dropdown.addItem('SOFA')
         self.method_dropdown.addItem('CCI')
@@ -69,12 +77,31 @@ class Toolkit(QMainWindow):
 
     def mapping_tab(self):
         """Create the Network page UI."""
-        networkTab = QWidget()
+        network_tab = QWidget()
         layout = QVBoxLayout()
+
+
+
         layout.addWidget(QCheckBox("Network Option 1"))
         layout.addWidget(QCheckBox("Network Option 2"))
-        networkTab.setLayout(layout)
-        return networkTab
+        network_tab.setLayout(layout)
+        return network_tab
+
+    def results_preview(self):
+        results_tab = QWidget()
+        layout = QVBoxLayout()
+        self.table_view = QTableView(self)
+        self.results_model = PandasModel(pd.DataFrame([]))
+
+        self.table_view.setModel(self.results_model)
+
+        layout.addWidget(self.table_view)
+        results_tab.setLayout(layout)
+        return results_tab
+
+    def update_results_tab(self):
+        self.results_model = PandasModel(self.results)
+        self.table_view.setModel(self.results_model)
 
     def select_method(self, method):
         self.current_method = method
@@ -93,6 +120,7 @@ class Toolkit(QMainWindow):
 
         if file[0] != '':
             self.csv = pd.read_csv(file[0])
+            self.run_btn.setEnabled(True)
 
     def export_csv(self):
         name = QFileDialog.getSaveFileName(self, 'Save File', filter='*.csv')
@@ -115,7 +143,40 @@ class Toolkit(QMainWindow):
         elif self.current_method == "OI":
             self.results = oxygenation.run(self.csv)
 
-    # def select_scoring(self, pressed):
+
+class PandasModel(QAbstractTableModel):
+    def __init__(self, data):
+        QAbstractTableModel.__init__(self)
+        self._data = data
+
+    def rowCount(self, parent=None):
+        return self._data.shape[0]
+
+    def columnCount(self, parent=None):
+        return self._data.shape[1]
+
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid():
+            if role == Qt.DisplayRole:
+                return str(self._data.iloc[index.row(), index.column()])
+        return None
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self._data.columns[col]
+        return None
+
+
+class CustomDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        ok_button = QDialogButtonBox.Ok
+        self.buttonBox = QDialogButtonBox(ok_button)
+        self.buttonBox.accepted.connect(self.accept)
+
+        self.layout = QVBoxLayout()
+        msg = ""
 
 
 def main():
