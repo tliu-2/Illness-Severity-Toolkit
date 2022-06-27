@@ -6,6 +6,13 @@ import Settings
 
 
 def calc_o2_index(maw, fio2, pao2):
+    """
+    Calculate oxygenation index.
+    :param maw: Mean Airway Pressure (mmHg)
+    :param fio2: Fraction of Inspired Oxygenation (decimal)
+    :param pao2: Partial Pressure of Oxygen (mmHg)
+    :return: Oxygenation Index (OI)
+    """
     if pao2 == -99 or np.isnan(pao2):
         return np.nan
     oi = (maw * (fio2 * 100)) / pao2
@@ -13,6 +20,12 @@ def calc_o2_index(maw, fio2, pao2):
 
 
 def calc_admit_discharge(admit, discharge):
+    """
+    Calculates the # of days between admit and discharge.
+    :param admit: Date of Admission
+    :param discharge: Date of Discharge
+    :return: Length of Stay
+    """
     if pd.isnull(admit) or pd.isnull(discharge):
         return np.nan
     admit = datetime.strptime(admit, "%Y-%m-%d %H:%M")
@@ -22,6 +35,12 @@ def calc_admit_discharge(admit, discharge):
 
 
 def make_tuples(_array, slicc_id):
+    """
+    Makes typles with a passed _array and the slicc_id
+    :param _array: an array
+    :param slicc_id: SLICC ID
+    :return: Tuple with slicc_id and _array
+    """
     tuple_list = []
     for item in _array:
         tuple_list.append((slicc_id, item))
@@ -29,11 +48,22 @@ def make_tuples(_array, slicc_id):
 
 
 def remove_hour_min(_datestr):
+    """
+    Removes hours and minutes from a date
+    :param _datestr: date
+    :return: date w/o minutes and hours
+    """
     length = len(_datestr)
     return _datestr[:length - 6]
 
 
 def calc_pf(p, f):
+    """
+    Calculates p / f ratio.
+    :param p: Partial pressure of oxygen (mmHg)
+    :param f: Fraction of Inspired Oxygen (decimal)
+    :return: p-to-f ratio
+    """
     if p == -99 or np.isnan(p) or f == -99 or np.isnan(f):
         return np.nan
     pf = p / f

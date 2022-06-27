@@ -6,12 +6,14 @@ import VFDs
 import oxygenation
 import sys
 from PyQt5.Qt import *
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import QThread, QTimer, QProcess
+from PyQt5 import QtCore, QtGui
 from pathlib import Path
 
 
 class Stream(QtCore.QObject):
+    """
+    Stream object to emit text signal for console text box
+    """
     text = QtCore.pyqtSignal(str)
 
     def write(self, text):
@@ -19,7 +21,11 @@ class Stream(QtCore.QObject):
 
 
 class Toolkit(QMainWindow):
+    """
+    Main Toolkit UI Class
+    """
 
+    # Headers for future, currently not implemented
     apache_headers = []
     sofa_headers = []
     cci_headers = []
@@ -31,9 +37,11 @@ class Toolkit(QMainWindow):
         self.results = None
         self.initUI()
 
-
-
     def initUI(self):
+        """
+        Acutal UI Initialization
+        :return:
+        """
         self.resize(500, 500)
         self.center()
         # Setup Main Window layout
@@ -83,18 +91,11 @@ class Toolkit(QMainWindow):
         self.run_btn.setDisabled(True)
         self.hbox.addWidget(self.run_btn)
 
-    def update_text(self, text):
-        cursor = self.console_text.textCursor()
-        cursor.movePosition(QTextCursor.End)
-        cursor.insertText(text)
-        self.console_text.setTextCursor(cursor)
-        self.console_text.ensureCursorVisible()
-
-    def __del__(self):
-        sys.stdout = sys.__stdout__
-
     def methods_tab(self):
-        """Create the General page UI."""
+        """
+        A QWidget that allows the presentation and selection of methods.
+        :return: the QWidget itself.
+        """
         generalTab = QWidget()
         layout = QVBoxLayout()
 
@@ -111,7 +112,7 @@ class Toolkit(QMainWindow):
         return generalTab
 
     def mapping_tab(self):
-        """Create the Network page UI."""
+        """Create a tab for mapping variables."""
         network_tab = QWidget()
         layout = QGridLayout()
 
@@ -121,6 +122,10 @@ class Toolkit(QMainWindow):
         return network_tab
 
     def results_preview(self):
+        """
+        Presents the results of a method calculation for users to preview.
+        :return: QWidget
+        """
         results_tab = QWidget()
         layout = QVBoxLayout()
         self.table_view = QTableView(self)
@@ -133,13 +138,26 @@ class Toolkit(QMainWindow):
         return results_tab
 
     def update_results_tab(self):
+        """
+        Update the results tab
+        :return: None
+        """
         self.results_model = PandasModel(self.results)
         self.table_view.setModel(self.results_model)
 
     def select_method(self, method):
+        """
+        Selects a method.
+        :param method: APACHE, SOFA, OI, etc.
+        :return: None
+        """
         self.current_method = method
 
     def center(self):
+        """
+        Centers the main frame on the screen.
+        :return: None
+        """
         main_window = self.frameGeometry()
         # QDesktop gets screen info, availableGeometry gets rectangle of monitor and center gets the center
         center_point = QDesktopWidget().availableGeometry().center()
@@ -148,6 +166,10 @@ class Toolkit(QMainWindow):
         self.move(main_window.topLeft())
 
     def import_csv(self):
+        """
+        Imports a csv file.
+        :return: None
+        """
         base_dir = str(Path.home())
         file = QFileDialog.getOpenFileName(self, 'Open file', base_dir)
 
@@ -157,6 +179,10 @@ class Toolkit(QMainWindow):
             print(f"File: {file[0]} imported")
 
     def export_csv(self):
+        """
+        Exports a csv file.
+        :return: None
+        """
         name = QFileDialog.getSaveFileName(self, 'Save File', filter='*.csv')
         if name[0] != '':
             if self.current_method != 'SOFA':
@@ -166,7 +192,10 @@ class Toolkit(QMainWindow):
         print(f"File {name[0]} exported")
 
     def run(self):
-
+        """
+        Runs a script depending on the current selected button.
+        :return: None
+        """
         if self.current_method == "APACHE":
             self.results = apache_Calc.run(self.csv)
         elif self.current_method == "SOFA":
@@ -178,8 +207,26 @@ class Toolkit(QMainWindow):
         elif self.current_method == "OI":
             self.results = oxygenation.run(self.csv)
 
+    def update_text(self, text):
+        """
+        Updates the console text box with what was sent to console output
+        :param text: str text in std_out
+        :return: None
+        """
+        cursor = self.console_text.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        cursor.insertText(text)
+        self.console_text.setTextCursor(cursor)
+        self.console_text.ensureCursorVisible()
+
+    def __del__(self):
+        sys.stdout = sys.__stdout__
+
 
 class PandasModel(QAbstractTableModel):
+    """
+    Custom table model for results preview. Allows PyQT5 to display pandas datafames.
+    """
     def __init__(self, data):
         QAbstractTableModel.__init__(self)
         self._data = data

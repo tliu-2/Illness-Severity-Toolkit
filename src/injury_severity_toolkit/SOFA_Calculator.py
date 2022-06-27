@@ -6,6 +6,11 @@ import Settings
 
 
 def get_bronch_dates(df):
+    """
+    Pull the days of bronchoscopies.
+    :param df: dataframe
+    :return: v1 and v2 bronch days
+    """
     bronch_days = {}
     for date, bronch in zip(df['date_dly'], df["bronch_day_visit"]):
         if bronch == 1:

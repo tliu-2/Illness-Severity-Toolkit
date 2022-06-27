@@ -738,6 +738,11 @@ def check_cancer(status):
 
 
 def check_leukemia(status):
+    """
+    Assigns an APACHE score for a given leukemia status.
+    :param status: leukemia status
+    :return: APACHE score based on whether a subject has leukemia.
+    """
     if math.isnan(status):
         return math.nan
     elif status == 1:
@@ -747,6 +752,11 @@ def check_leukemia(status):
 
 
 def check_lymphoma(status):
+    """
+    Assigns an APACHE score for a given lymphoma status.
+    :param status: lymphoma status
+    :return: APACHE score based on whether a subject has lymphoma.
+    """
     if math.isnan(status):
         return math.nan
     elif status == 1:
@@ -923,6 +933,11 @@ def check_aids(status):
 # -----------------------------------------------------------------------------------------------------------------------
 # CCI Start:
 def cci_get_age_score(age):
+    """
+    Gets the CCI for age.
+    :param age: Age
+    :return: CCI for age.
+    """
     if math.isnan(age):
         return math.nan
     if age >= 80:
@@ -938,6 +953,11 @@ def cci_get_age_score(age):
 
 
 def cci_weight1(x):
+    """
+    Gets the CCI for categories designated as "1 weight".
+    :param x: Category (e.g., heart rate or something)
+    :return: CCI for x category.
+    """
     if math.isnan(x):
         return math.nan
     if x == 1:
@@ -947,6 +967,11 @@ def cci_weight1(x):
 
 
 def cci_weight2(x):
+    """
+    Gets the CCI for categories designated as "2 weight".
+    :param x: Category
+    :return: CCI for x category.
+    """
     if math.isnan(x):
         return math.nan
     if x == 1:
@@ -956,6 +981,11 @@ def cci_weight2(x):
 
 
 def cci_weight3(x):
+    """
+    Gets the CCI for categories designated as "3 weight".
+    :param x: Category
+    :return: CCI for x category.
+    """
     if math.isnan(x):
         return math.nan
     if x == 1:
@@ -965,6 +995,11 @@ def cci_weight3(x):
 
 
 def cci_weight6(x):
+    """
+    Gets the CCI for categories designated as "6 weight".
+    :param x: Category
+    :return: CCI for x category.
+    """
     if math.isnan(x):
         return math.nan
     if x == 1:
@@ -976,6 +1011,13 @@ def cci_weight6(x):
 # ----------------------------------------------------------------------------------------------------------------------
 # SOFA Start:
 def sofa_resp(pao2, fio2, mv):
+    """
+    Calculate SOFA scores for the respiratory section.
+    :param pao2: Partial pressure of oxygen (mmHg)
+    :param fio2: Fraction of inspired oxygen (decimal)
+    :param mv: mechanical ventilation status
+    :return: SOFA score
+    """
     if math.isnan(pao2) or math.isnan(fio2):
         return math.nan
     if pao2 == -99 or fio2 == -99:
@@ -996,6 +1038,11 @@ def sofa_resp(pao2, fio2, mv):
 
 
 def sofa_platelets(plts):
+    """
+    Calculates SOFA score for platelets section.
+    :param plts: platelets measurement
+    :return: SOFA score
+    """
     if math.isnan(plts) or plts == -99:
         return math.nan
     if plts > 150:
@@ -1011,6 +1058,11 @@ def sofa_platelets(plts):
 
 
 def sofa_bilirubin(bili):
+    """
+    Calculates SOFA score for bilirubin section.
+    :param bili: bilirubin measurement
+    :return: SOFA score
+    """
     if math.isnan(bili) or bili == -99 or bili == -99.9:
         return math.nan
     if bili < 1.2:
@@ -1026,6 +1078,12 @@ def sofa_bilirubin(bili):
 
 
 def sofa_bp(bp, pressors):
+    """
+    Calculates SOFA scores for blood pressure section.
+    :param bp: blood pressure measurement
+    :param pressors: measurement for pressors
+    :return: SOFA score
+    """
     if math.isnan(bp):
         return math.nan
 
@@ -1043,6 +1101,11 @@ def sofa_bp(bp, pressors):
 
 
 def sofa_gcs(gcs):
+    """
+    Calculates SOFA score for Glasgow Coma Scale (gcs) section.
+    :param gcs: Glasgow Coma Scale
+    :return: SOFA score
+    """
     if math.isnan(gcs) or gcs == -99:
         return math.nan
     if gcs >= 15:
@@ -1058,6 +1121,12 @@ def sofa_gcs(gcs):
 
 
 def sofa_renal(cr, urine):
+    """
+    Calculates SOFA score for the renal section.
+    :param cr: Creatinine measurement
+    :param urine: Urine output measurement
+    :return: SOFA score
+    """
     if math.isnan(cr) and math.isnan(urine):
         return math.nan
     if cr < 1.2:
