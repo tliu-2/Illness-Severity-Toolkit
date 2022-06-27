@@ -46,7 +46,7 @@ def run(df, test=False):
     list_oi_b1 = []
     list_oi_b2 = []
     for slicc_id, group in df_t:
-        print(f"at {slicc_id}")
+        # print(f"at {slicc_id}")
         dates = group.iloc[0]
         group = group.iloc[1:, :]
 
@@ -56,7 +56,7 @@ def run(df, test=False):
         if str(dates['b1_datetime']).strip() != 'nan':
             bronch1 = remove_hour_min(dates['b1_datetime'])
             b1 = group[group['date_dly'] == bronch1]
-            print("reached b1")
+            # print("reached b1")
             oi_b1 = calc_o2_index(b1['tx_hosp_vent_dly_maw'].values, b1['tx_hosp_vent_dly_fio2'].values,
                                   b1['lab_hosp_pao2_l_dly'].values)
             pf_b1 = calc_pf(b1['lab_hosp_pao2_l_dly'].values, b1['tx_hosp_vent_dly_fio2'].values)
@@ -65,7 +65,7 @@ def run(df, test=False):
         if str(dates['b2_datetime']).strip() != 'nan':
             bronch2 = remove_hour_min(dates['b2_datetime'])
             b2 = group[group['date_dly'] == bronch2]
-            print("reached b2")
+            # print("reached b2")
             oi_b2 = calc_o2_index(b2['tx_hosp_vent_dly_maw'].values, b2['tx_hosp_vent_dly_fio2'].values,
                                   b2['lab_hosp_pao2_l_dly'].values)
             pf_b2 = calc_pf(b2['lab_hosp_pao2_l_dly'].values, b2['tx_hosp_vent_dly_fio2'].values)

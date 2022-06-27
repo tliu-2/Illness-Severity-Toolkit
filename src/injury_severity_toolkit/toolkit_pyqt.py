@@ -6,8 +6,16 @@ import VFDs
 import oxygenation
 import sys
 from PyQt5.Qt import *
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtCore import QThread, QTimer, QProcess
 from pathlib import Path
+
+
+class Stream(QtCore.QObject):
+    text = QtCore.pyqtSignal(str)
+
+    def write(self, text):
+        self.text.emit(str(text))
 
 
 class Toolkit(QMainWindow):
@@ -23,6 +31,8 @@ class Toolkit(QMainWindow):
         self.results = None
         self.initUI()
 
+
+
     def initUI(self):
         self.resize(500, 500)
         self.center()
@@ -30,6 +40,7 @@ class Toolkit(QMainWindow):
         self.setCentralWidget(QWidget(self))
         self.hbox = QHBoxLayout()
         self.centralWidget().setLayout(self.hbox)
+        sys.stdout = Stream(text=self.update_text)
 
         # Title
         self.setWindowTitle('Illness Severity Toolkit')
@@ -44,6 +55,16 @@ class Toolkit(QMainWindow):
         # Create a top-level layout
         layout = QVBoxLayout()
         self.setLayout(layout)
+
+        # Create a text box the display console outputs.
+        self.console_text = QTextEdit(self, readOnly=True)
+        self.console_text.moveCursor(QtGui.QTextCursor.Start)
+        self.console_text.ensureCursorVisible()
+        self.console_text.setLineWrapColumnOrWidth(500)
+        self.console_text.setLineWrapMode(QTextEdit.FixedPixelWidth)
+
+        layout.addWidget(self.console_text)
+        self.hbox.addLayout(layout)
 
         tabs = QTabWidget()
         tabs.addTab(self.methods_tab(), 'Methods')
@@ -61,6 +82,16 @@ class Toolkit(QMainWindow):
         self.run_btn.clicked.connect(self.update_results_tab)
         self.run_btn.setDisabled(True)
         self.hbox.addWidget(self.run_btn)
+
+    def update_text(self, text):
+        cursor = self.console_text.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        cursor.insertText(text)
+        self.console_text.setTextCursor(cursor)
+        self.console_text.ensureCursorVisible()
+
+    def __del__(self):
+        sys.stdout = sys.__stdout__
 
     def methods_tab(self):
         """Create the General page UI."""
@@ -123,6 +154,7 @@ class Toolkit(QMainWindow):
         if file[0] != '':
             self.csv = pd.read_csv(file[0])
             self.run_btn.setEnabled(True)
+            print(f"File: {file[0]} imported")
 
     def export_csv(self):
         name = QFileDialog.getSaveFileName(self, 'Save File', filter='*.csv')
@@ -131,6 +163,7 @@ class Toolkit(QMainWindow):
                 self.results.to_csv(name[0], index=None, header=True)
             else:
                 self.results.to_csv(name[0], index=True, header=True)
+        print(f"File {name[0]} exported")
 
     def run(self):
 
@@ -167,18 +200,6 @@ class PandasModel(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self._data.columns[col]
         return None
-
-
-class CustomDialog(QDialog):
-    def __init__(self):
-        super().__init__()
-
-        ok_button = QDialogButtonBox.Ok
-        self.buttonBox = QDialogButtonBox(ok_button)
-        self.buttonBox.accepted.connect(self.accept)
-
-        self.layout = QVBoxLayout()
-        msg = ""
 
 
 def main():
