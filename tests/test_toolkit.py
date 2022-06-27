@@ -3,10 +3,9 @@ import os
 import sys
 from pandas.testing import assert_frame_equal
 import unittest
+from src.injury_severity_toolkit import CCI_Calculator, SOFA_Calculator, APACHEIII_Calculator, VFDs
 
 sys.path.append('../src/injury_severity_toolkit')
-
-from src.injury_severity_toolkit import CCI_Calculator, SOFA_Calculator, APACHEIII_Calculator, VFDs
 
 
 class TestToolkit(unittest.TestCase):
