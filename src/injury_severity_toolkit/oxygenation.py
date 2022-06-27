@@ -8,8 +8,8 @@ import Settings
 def calc_o2_index(maw, fio2, pao2):
     if pao2 == -99 or np.isnan(pao2):
         return np.nan
-    oi = maw * fio2 * 100 / pao2
-    return oi
+    oi = (maw * (fio2 * 100)) / pao2
+    return oi[0]
 
 
 def calc_admit_discharge(admit, discharge):
@@ -36,7 +36,8 @@ def remove_hour_min(_datestr):
 def calc_pf(p, f):
     if p == -99 or np.isnan(p) or f == -99 or np.isnan(f):
         return np.nan
-    return p / f
+    pf = p / f
+    return pf[0]
 
 
 def run(df, test=False):
@@ -48,6 +49,9 @@ def run(df, test=False):
         print(f"at {slicc_id}")
         dates = group.iloc[0]
         group = group.iloc[1:, :]
+
+        if group.empty:
+            continue
 
         if str(dates['b1_datetime']).strip() != 'nan':
             bronch1 = remove_hour_min(dates['b1_datetime'])
@@ -78,5 +82,9 @@ def run(df, test=False):
     df_dates = pd.DataFrame(list_dates, columns=['slicc_study_id', 'Relative Discharge Day'])
     final_df = pd.concat([final_df, df_dates], axis=1)
 
-    Settings.export_csv(final_df)
+    if test:
+        final_df.to_csv("./SOFA_test.csv", index=True, header=True)
+    else:
+        return final_df
+
 

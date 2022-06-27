@@ -12,6 +12,10 @@ from pathlib import Path
 
 class Toolkit(QMainWindow):
 
+    apache_headers = []
+    sofa_headers = []
+    cci_headers = []
+
     def __init__(self):
         super().__init__()
         self.csv = None
@@ -78,12 +82,10 @@ class Toolkit(QMainWindow):
     def mapping_tab(self):
         """Create the Network page UI."""
         network_tab = QWidget()
-        layout = QVBoxLayout()
+        layout = QGridLayout()
 
-
-
-        layout.addWidget(QCheckBox("Network Option 1"))
-        layout.addWidget(QCheckBox("Network Option 2"))
+        layout.addWidget(QLabel("Heart Rate High", self), 0, 0)
+        layout.addWidget(QComboBox(self), 0, 1)
         network_tab.setLayout(layout)
         return network_tab
 
