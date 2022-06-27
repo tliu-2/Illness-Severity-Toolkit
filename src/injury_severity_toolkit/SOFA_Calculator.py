@@ -2,8 +2,7 @@ import math
 
 import numpy as np
 import pandas as pd
-import Settings
-
+from src.injury_severity_toolkit import Settings
 
 def get_bronch_dates(df):
     """

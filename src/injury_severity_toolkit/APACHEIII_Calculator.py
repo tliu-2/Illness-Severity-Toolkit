@@ -6,8 +6,7 @@
 # (axis = 1) such that the row values are summed (total score for an individual).
 
 import pandas as pd
-import Settings as Settings
-
+from src.injury_severity_toolkit import Settings
 
 def run(df, test=False):
     sumdf = pd.DataFrame([])

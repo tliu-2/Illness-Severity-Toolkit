@@ -1,6 +1,6 @@
 import pandas as pd
 
-import Settings
+from src.injury_severity_toolkit import Settings
 
 
 def run(df, test=False):

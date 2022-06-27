@@ -1,8 +1,5 @@
 import pandas as pd
 
-import Settings
-
-
 def calculate_vfds(row):
     """
     Calculates VFDs based on intubation variables.
