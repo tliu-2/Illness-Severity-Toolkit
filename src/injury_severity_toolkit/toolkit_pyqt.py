@@ -4,6 +4,7 @@ import SOFA_Calculator as sofa_Calc
 import CCI_Calculator as cci_Calc
 import VFDs
 import oxygenation
+import sfpf
 import sys
 from PyQt5.Qt import *
 from PyQt5 import QtCore, QtGui
@@ -105,6 +106,7 @@ class Toolkit(QMainWindow):
         self.method_dropdown.addItem('CCI')
         self.method_dropdown.addItem('VFD')
         self.method_dropdown.addItem('OI')
+        self.method_dropdown.addItem('S/F, P/F')
         self.method_dropdown.activated[str].connect(self.select_method)
 
         layout.addWidget(self.method_dropdown)
@@ -206,6 +208,8 @@ class Toolkit(QMainWindow):
             self.results = VFDs.run(self.csv)
         elif self.current_method == "OI":
             self.results = oxygenation.run(self.csv)
+        elif self.current_method == "S/F, P/F":
+            self.results = sfpf.run(self.csv)
 
     def update_text(self, text):
         """

@@ -53,12 +53,13 @@ def run(df, test=False):
             sofa_score = temp_df.iloc[:, 2:].sum(axis=1)
             temp_df.insert(2, "SOFA score", sofa_score)
             temp_df['bronch_day_visit'] = group['bronch_day_visit']
-            bronch_dicts[slicc_id] = get_bronch_dates(temp_df)
+            bronch_dicts[slicc_id] = get_bronch_dates(temp_df)  # Not efficient....
             frames.append(temp_df)
 
     final_df = pd.concat(frames)
     final_df.dropna(subset=['date_dly'], inplace=True)
-    final_df = final_df.pivot_table(index='slicc_subject_id', columns='date_dly', values='SOFA score', sort=False)
+    final_df = final_df.pivot_table(index='slicc_subject_id', columns='date_dly', values='SOFA score', sort=False,
+                                    dropna=False)
     final_df = final_df.reindex(col_order, axis=1)
 
     bronch_df = pd.DataFrame(bronch_dicts)
